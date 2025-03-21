@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:how_much_do_i_owe_you/ui/screens/auth/utils/form_validators.dart';
+import 'package:how_much_do_i_owe_you/ui/screens/auth/widgets/headers.dart';
+import 'package:how_much_do_i_owe_you/ui/widgets/custom_button.dart';
+import 'package:how_much_do_i_owe_you/ui/widgets/custom_input_field.dart';
 
 class PasswordResetScreen extends StatefulWidget {
   const PasswordResetScreen({Key? key}) : super(key: key);
@@ -40,9 +44,7 @@ class _PasswordResetScreenState extends State<PasswordResetScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(
-        0xFFF0F5FF,
-      ), // Light blue background from your design
+      backgroundColor: const Color(0xFFF0F5FF),
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -80,92 +82,27 @@ class _PasswordResetScreenState extends State<PasswordResetScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          // Icon and instructions
-          const Icon(
-            Icons.lock_reset,
-            size: 64,
-            color: Color(0xFF2176FF),
-          ),
-          const SizedBox(height: 24),
-          const Text(
-            'Forgot your password?',
-            style: TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-              color: Color(0xFF1A1A1A),
-            ),
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: 16),
-          const Text(
-            'Enter your email address and we\'ll send you instructions to reset your password.',
-            style: TextStyle(fontSize: 16, color: Color(0xFF757575)),
-            textAlign: TextAlign.center,
-          ),
+          // Header section with instructions
+          const PasswordResetHeader(),
           const SizedBox(height: 32),
 
           // Email Field
-          TextFormField(
+          CustomInputField(
             controller: _emailController,
+            labelText: 'Email',
+            hintText: 'Enter your email address',
+            prefixIcon: Icons.email_outlined,
             keyboardType: TextInputType.emailAddress,
-            decoration: InputDecoration(
-              labelText: 'Email',
-              hintText: 'Enter your email address',
-              prefixIcon: const Icon(Icons.email_outlined),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(15),
-              ),
-              filled: true,
-              fillColor: Colors.white,
-            ),
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Please enter your email';
-              }
-              if (!RegExp(
-                r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
-              ).hasMatch(value)) {
-                return 'Please enter a valid email';
-              }
-              return null;
-            },
+            validator: FormValidators.validateEmail,
           ),
 
           const SizedBox(height: 32),
 
           // Reset Button
-          ElevatedButton(
-            onPressed: _isLoading ? null : _resetPassword,
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(
-                0xFF2176FF,
-              ), // Blue from your design
-              foregroundColor: Colors.white,
-              padding: const EdgeInsets.symmetric(vertical: 16),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(25),
-              ),
-              elevation: 0,
-            ),
-            child:
-                _isLoading
-                    ? const SizedBox(
-                      height: 20,
-                      width: 20,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                        valueColor: AlwaysStoppedAnimation<Color>(
-                          Colors.white,
-                        ),
-                      ),
-                    )
-                    : const Text(
-                      'Reset Password',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
+          PrimaryButton(
+            text: 'Reset Password',
+            onPressed: _resetPassword,
+            isLoading: _isLoading,
           ),
 
           const SizedBox(height: 24),
@@ -243,27 +180,9 @@ class _PasswordResetScreenState extends State<PasswordResetScreen> {
         const SizedBox(height: 32),
 
         // Return to Login Button
-        ElevatedButton(
-          onPressed: () {
-            // Pop back to login screen
-            Navigator.pop(context);
-          },
-          style: ElevatedButton.styleFrom(
-            backgroundColor: const Color(0xFF2176FF),
-            foregroundColor: Colors.white,
-            padding: const EdgeInsets.symmetric(vertical: 16),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(25),
-            ),
-            elevation: 0,
-          ),
-          child: const Text(
-            'Return to Login',
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
+        PrimaryButton(
+          text: 'Return to Login',
+          onPressed: () => Navigator.pop(context),
         ),
 
         const SizedBox(height: 32),
