@@ -202,9 +202,10 @@ class _SettlementDetailScreenState extends State<SettlementDetailScreen> {
     final isUserReceiver = _settlement?.receiverId == currentUserId;
 
     // Calculate time difference outside the build method for use in conditions
+
     final DateTime now = DateTime.now();
     final bool isRecentSettlement =
-        _settlement != null && now.difference(_settlement!.date).inHours <= 24;
+        _settlement != null && now.difference(_settlement!.date).inHours < 24;
 
     return Scaffold(
       appBar: AppBar(title: const Text('Settlement Details')),
@@ -216,6 +217,7 @@ class _SettlementDetailScreenState extends State<SettlementDetailScreen> {
               : _settlement == null
               ? const Center(child: Text('Settlement not found'))
               : SafeArea(
+                bottom: false,
                 child: Column(
                   children: [
                     // Details content
@@ -241,7 +243,12 @@ class _SettlementDetailScreenState extends State<SettlementDetailScreen> {
                         (isUserPayer || isUserReceiver) &&
                         isRecentSettlement)
                       Container(
-                        padding: const EdgeInsets.all(16.0),
+                        padding: const EdgeInsets.only(
+                          top: 16.0,
+                          left: 16,
+                          right: 16,
+                          bottom: 48,
+                        ),
                         decoration: BoxDecoration(
                           color: Colors.white,
                           boxShadow: [

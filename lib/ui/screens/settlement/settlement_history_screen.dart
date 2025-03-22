@@ -22,7 +22,10 @@ class _SettlementHistoryScreenState extends State<SettlementHistoryScreen> {
   @override
   void initState() {
     super.initState();
-    _loadSettlements();
+    // Use addPostFrameCallback to defer the initialization until after the build
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _loadSettlements();
+    });
   }
 
   Future<void> _loadSettlements() async {

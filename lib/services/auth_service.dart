@@ -23,22 +23,18 @@ class AuthService {
     if (currentUser == null) return null;
 
     try {
-      print("Getting document for user: ${currentUser!.uid}");
       DocumentSnapshot doc =
           await _firestore
               .collection(AppConstants.usersCollection)
               .doc(currentUser!.uid)
               .get();
 
-      print("Document exists: ${doc.exists}");
       if (doc.exists) {
-        print("Document data before conversion: ${doc.data()}");
         return UserModel.fromFirestore(doc);
       }
 
       return null;
     } catch (e) {
-      print("Error with stack trace: $e\n${StackTrace.current}");
       return null;
     }
   }

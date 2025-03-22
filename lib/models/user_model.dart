@@ -37,9 +37,6 @@ class UserModel {
   factory UserModel.fromFirestore(DocumentSnapshot doc) {
     Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
 
-    // Debug print to see what's in the document
-    print("Document data: $data");
-
     return UserModel(
       userId: doc.id,
       email: data['email'] ?? '',

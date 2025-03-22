@@ -218,8 +218,8 @@ class BalanceService {
         // Update existing balance
         double newAmount = existingBalance.amount;
 
-        // If payer is userIdA, add amount; otherwise subtract
-        if (existingBalance.userIdA == payerId) {
+        // If receiver is userIdA, add amount; otherwise subtract
+        if (existingBalance.userIdA == receiverId) {
           newAmount += amount;
         } else {
           newAmount -= amount;

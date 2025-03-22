@@ -56,7 +56,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
           IconButton(
             icon: const Icon(Icons.settings_outlined),
             onPressed: () {
-              Navigator.pushNamed(context, AppConstants.settingsRoute);
+              // Clear any existing SnackBar before showing a new one
+              ScaffoldMessenger.of(context).removeCurrentSnackBar();
+
+              // TODO: Navigate to profile setting screen
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('Profile settings feature coming soon!'),
+                ),
+              );
             },
           ),
         ],
