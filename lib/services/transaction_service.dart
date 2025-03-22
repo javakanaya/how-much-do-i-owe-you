@@ -176,6 +176,30 @@ class TransactionService {
     }
   }
 
+  // Get a specific participant for a transaction
+  Future<ParticipantModel?> getParticipantForTransaction(
+    String transactionId,
+    String userId,
+  ) async {
+    try {
+      final docId = '${transactionId}_$userId';
+      final doc =
+          await _firestore
+              .collection(AppConstants.participantsCollection)
+              .doc(docId)
+              .get();
+
+      if (doc.exists) {
+        return ParticipantModel.fromFirestore(doc);
+      }
+
+      return null;
+    } catch (e) {
+      debugPrint('Error getting participant: $e');
+      return null;
+    }
+  }
+
   // Mark a participant as settled in a transaction
   Future<void> markParticipantSettled(
     String transactionId,
@@ -207,6 +231,82 @@ class TransactionService {
     } catch (e) {
       debugPrint('Error marking participant settled: $e');
       throw Exception('Failed to mark as settled: $e');
+    }
+  }
+
+  // Unmark a participant as settled (used when cancelling a settlement)
+  Future<void> unmarkParticipantSettled(
+    String transactionId,
+    String userId,
+  ) async {
+    try {
+      final docId = '${transactionId}_$userId';
+
+      // Update participant record
+      await _firestore
+          .collection(AppConstants.participantsCollection)
+          .doc(docId)
+          .update({'isSettled': false, 'settledAt': null});
+
+      // Update transaction status back to active
+      await _firestore
+          .collection(AppConstants.transactionsCollection)
+          .doc(transactionId)
+          .update({'status': 'active'});
+    } catch (e) {
+      debugPrint('Error unmarking participant settled: $e');
+      throw Exception('Failed to unmark as settled: $e');
+    }
+  }
+
+  // Get unsettled transactions between two users
+  Future<List<TransactionModel>> getUnsettledTransactionsBetweenUsers(
+    String userIdA,
+    String userIdB,
+  ) async {
+    try {
+      // Get all transactions involving both users
+      final allTransactions = await getTransactionsForUser(userIdA);
+
+      // Filter to those that include the other user
+      final sharedTransactions =
+          allTransactions
+              .where((t) => t.participants.contains(userIdB))
+              .toList();
+
+      // Now filter to only active (unsettled) transactions where one user owes the other
+      final List<TransactionModel> unsettledTransactions = [];
+
+      for (var transaction in sharedTransactions) {
+        if (transaction.status != 'active') continue;
+
+        // Get the participant record for user A
+        final participantA = await getParticipantForTransaction(
+          transaction.transactionId,
+          userIdA,
+        );
+
+        // Get the participant record for user B
+        final participantB = await getParticipantForTransaction(
+          transaction.transactionId,
+          userIdB,
+        );
+
+        if (participantA == null || participantB == null) continue;
+
+        // Add the transaction if:
+        // 1. User A is the payer and user B has not settled, or
+        // 2. User B is the payer and user A has not settled
+        if ((participantA.isPayer && !participantB.isSettled) ||
+            (participantB.isPayer && !participantA.isSettled)) {
+          unsettledTransactions.add(transaction);
+        }
+      }
+
+      return unsettledTransactions;
+    } catch (e) {
+      debugPrint('Error getting unsettled transactions: $e');
+      return [];
     }
   }
 
