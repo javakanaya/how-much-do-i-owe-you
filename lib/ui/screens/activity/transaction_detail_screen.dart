@@ -253,9 +253,9 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
           (p) => p.userId == currentUserId,
         );
 
-        // Can settle if user is not the payer and hasn't settled yet
+        // Can settle if user is the payer and hasn't settled yet
         canSettle =
-            !currentUserParticipation.isPayer &&
+            currentUserParticipation.isPayer &&
             !currentUserParticipation.isSettled &&
             _transaction?.status == 'active';
       } catch (e) {

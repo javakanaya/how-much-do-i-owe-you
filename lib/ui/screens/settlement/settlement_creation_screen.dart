@@ -1,5 +1,7 @@
 // ui/screens/settlement/settlement_creation_screen.dart
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:how_much_do_i_owe_you/providers/auth_provider.dart';
 import 'package:how_much_do_i_owe_you/ui/screens/settlement/widgets/settlement_creation_bottom_bar.dart';
 import 'package:provider/provider.dart';
 import 'package:how_much_do_i_owe_you/config/app_theme.dart';
@@ -40,6 +42,12 @@ class _SettlementCreationScreenState extends State<SettlementCreationScreen> {
       context,
       listen: false,
     );
+
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+
+    if (authProvider.userModel?.userId != null) {
+      settlementProvider.initialize(authProvider.userModel!.userId);
+    }
 
     await settlementProvider.prepareSettlementWithUser(widget.userId);
 
