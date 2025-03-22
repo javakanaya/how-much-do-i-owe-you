@@ -27,7 +27,7 @@ class PrimaryButton extends StatelessWidget {
           isLoading
               ? const SizedBox(
                 height: 20,
-                width: 20,
+                width: double.infinity,
                 child: CircularProgressIndicator(
                   strokeWidth: 2,
                   valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
