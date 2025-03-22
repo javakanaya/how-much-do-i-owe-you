@@ -19,7 +19,6 @@ class AppConstants {
   static const String participantsCollection = 'participants';
   static const String balancesCollection = 'balances';
   static const String settlementsCollection = 'settlements';
-  static const String categoriesCollection = 'categories';
 
   // Points system
   static const int pointsForNewTransaction = 10;
@@ -33,9 +32,7 @@ class AppConstants {
   // App settings
   static const double defaultPadding = 16.0;
   static const double cardBorderRadius = 15.0;
-  static const Duration animationDuration = Duration(
-    milliseconds: 300,
-  );
+  static const Duration animationDuration = Duration(milliseconds: 300);
 
   // Error messages
   static const String defaultErrorMessage =
@@ -50,6 +47,5 @@ class AppConstants {
       'Transaction added successfully!';
   static const String settlementCompletedMessage =
       'Settlement completed successfully!';
-  static const String profileUpdatedMessage =
-      'Profile updated successfully!';
+  static const String profileUpdatedMessage = 'Profile updated successfully!';
 }
