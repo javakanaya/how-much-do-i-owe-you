@@ -107,35 +107,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
         ),
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: 2, // Profile tab
-        onTap: (index) {
-          if (index == 0) {
-            // Navigate to Home
-            Navigator.pushReplacementNamed(context, AppConstants.homeRoute);
-          } else if (index == 1) {
-            // Navigate to Activity
-            Navigator.pushReplacementNamed(context, AppConstants.activityRoute);
-          }
-        },
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home_outlined),
-            activeIcon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.receipt_long_outlined),
-            activeIcon: Icon(Icons.receipt_long),
-            label: 'Activity',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person_outline),
-            activeIcon: Icon(Icons.person),
-            label: 'Profile',
-          ),
-        ],
-      ),
     );
   }
 
@@ -191,6 +162,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
         // Edit profile button
         TextButton.icon(
           onPressed: () {
+            // Clear any existing SnackBar before showing a new one
+            ScaffoldMessenger.of(context).removeCurrentSnackBar();
+
             // TODO: Navigate to edit profile screen
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(

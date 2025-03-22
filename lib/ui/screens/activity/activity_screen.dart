@@ -112,35 +112,6 @@ class _ActivityScreenState extends State<ActivityScreen> {
                 ? _buildEmptyState()
                 : _buildTransactionList(transactions),
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: 1, // Activity tab
-        onTap: (index) {
-          if (index == 0) {
-            // Navigate to Home
-            Navigator.pushReplacementNamed(context, AppConstants.homeRoute);
-          } else if (index == 2) {
-            // Navigate to Profile
-            Navigator.pushReplacementNamed(context, AppConstants.profileRoute);
-          }
-        },
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home_outlined),
-            activeIcon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.receipt_long_outlined),
-            activeIcon: Icon(Icons.receipt_long),
-            label: 'Activity',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person_outline),
-            activeIcon: Icon(Icons.person),
-            label: 'Profile',
-          ),
-        ],
-      ),
     );
   }
 

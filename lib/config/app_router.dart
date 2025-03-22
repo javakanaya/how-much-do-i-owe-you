@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:how_much_do_i_owe_you/ui/screens/activity/activity_screen.dart';
 import 'package:how_much_do_i_owe_you/ui/screens/activity/transaction_detail_screen.dart';
-import 'package:how_much_do_i_owe_you/ui/screens/home/home_screen.dart';
-import 'package:how_much_do_i_owe_you/ui/screens/profile/profile_screen.dart';
 import 'package:how_much_do_i_owe_you/ui/screens/transaction/transaction_creation_screen.dart';
+import 'package:how_much_do_i_owe_you/ui/widgets/custom_navigation_bar.dart';
 
 import 'package:provider/provider.dart';
 import '../config/app_constants.dart';
@@ -23,7 +21,7 @@ class AppRouter {
               context,
               listen: false,
             ).isAuthenticated) {
-              return const HomeScreen();
+              return const CustomNavigationBar();
             }
             return const LoginScreen();
           },
@@ -45,7 +43,7 @@ class AppRouter {
             ).isAuthenticated) {
               return const LoginScreen();
             }
-            return const HomeScreen();
+            return const CustomNavigationBar();
           },
         );
 
@@ -74,7 +72,7 @@ class AppRouter {
             ).isAuthenticated) {
               return const LoginScreen();
             }
-            return const ActivityScreen();
+            return const CustomNavigationBar(selectedPageIndex: 1);
           },
         );
 
@@ -89,7 +87,7 @@ class AppRouter {
             ).isAuthenticated) {
               return const LoginScreen();
             }
-            return const ProfileScreen();
+            return const CustomNavigationBar(selectedPageIndex: 2);
           },
         );
 
