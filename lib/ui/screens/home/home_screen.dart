@@ -1,3 +1,4 @@
+// ui/screens/dashboard/home_screen.dart
 import 'package:flutter/material.dart';
 import 'package:how_much_do_i_owe_you/config/app_constants.dart';
 import 'package:how_much_do_i_owe_you/ui/screens/home/widgets/balance_summary_widget.dart';

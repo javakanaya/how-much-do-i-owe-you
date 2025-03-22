@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:how_much_do_i_owe_you/ui/screens/activity/activity_screen.dart';
 import 'package:how_much_do_i_owe_you/ui/screens/activity/transaction_detail_screen.dart';
 import 'package:how_much_do_i_owe_you/ui/screens/home/home_screen.dart';
+import 'package:how_much_do_i_owe_you/ui/screens/profile/profile_screen.dart';
 import 'package:how_much_do_i_owe_you/ui/screens/transaction/transaction_creation_screen.dart';
+
 import 'package:provider/provider.dart';
 import '../config/app_constants.dart';
 import '../providers/auth_provider.dart';
@@ -73,6 +75,21 @@ class AppRouter {
               return const LoginScreen();
             }
             return const ActivityScreen();
+          },
+        );
+
+      // Add route for Profile Screen
+      case AppConstants.profileRoute:
+        return MaterialPageRoute(
+          builder: (context) {
+            // If not authenticated, redirect to login
+            if (!Provider.of<AuthProvider>(
+              context,
+              listen: false,
+            ).isAuthenticated) {
+              return const LoginScreen();
+            }
+            return const ProfileScreen();
           },
         );
 
