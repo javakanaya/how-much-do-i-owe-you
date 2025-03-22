@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:how_much_do_i_owe_you/ui/screens/auth/utils/form_validators.dart';
 import 'package:how_much_do_i_owe_you/ui/screens/auth/widgets/headers.dart';
 import 'package:how_much_do_i_owe_you/ui/screens/auth/widgets/password_input_field.dart';
 import 'package:how_much_do_i_owe_you/ui/widgets/custom_button.dart';
 import 'package:how_much_do_i_owe_you/ui/widgets/custom_input_field.dart';
+import 'package:how_much_do_i_owe_you/providers/auth_provider.dart';
 import '../../../config/app_theme.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -17,7 +19,6 @@ class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  bool _isLoading = false;
 
   @override
   void dispose() {
@@ -26,24 +27,26 @@ class _LoginScreenState extends State<LoginScreen> {
     super.dispose();
   }
 
-  void _login() {
+  Future<void> _login() async {
     if (_formKey.currentState!.validate()) {
-      setState(() {
-        _isLoading = true;
-      });
+      final authProvider = Provider.of<AuthProvider>(context, listen: false);
 
-      // Here you would typically authenticate with Firebase
-      // For now, we'll just simulate a delay
-      Future.delayed(const Duration(seconds: 1), () {
-        setState(() {
-          _isLoading = false;
-        });
+      final success = await authProvider.signIn(
+        _emailController.text.trim(),
+        _passwordController.text,
+      );
 
-        // Navigate to home screen (to be implemented)
+      if (success && mounted) {
+        // Navigation is handled by the router based on auth state
+      } else if (mounted) {
+        // Show error message
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Login successful')),
+          SnackBar(
+            content: Text(authProvider.errorMessage ?? 'Login failed'),
+            backgroundColor: AppTheme.errorColor,
+          ),
         );
-      });
+      }
     }
   }
 
@@ -57,6 +60,9 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final authProvider = Provider.of<AuthProvider>(context);
+    final isLoading = authProvider.isLoading;
+
     return Scaffold(
       backgroundColor: AppTheme.backgroundColor,
       body: SafeArea(
@@ -113,7 +119,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     PrimaryButton(
                       text: 'Login',
                       onPressed: _login,
-                      isLoading: _isLoading,
+                      isLoading: isLoading,
                     ),
 
                     const SizedBox(height: 64),
@@ -124,9 +130,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       children: [
                         const Text(
                           "Don't have an account? ",
-                          style: TextStyle(
-                            color: AppTheme.textSecondaryColor,
-                          ),
+                          style: TextStyle(color: AppTheme.textSecondaryColor),
                         ),
                         GestureDetector(
                           onTap: _navigateToRegister,

@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:how_much_do_i_owe_you/ui/screens/auth/utils/form_validators.dart';
 import 'package:how_much_do_i_owe_you/ui/screens/auth/widgets/password_input_field.dart';
 import 'package:how_much_do_i_owe_you/ui/screens/auth/widgets/profile_image_picker.dart';
 import 'package:how_much_do_i_owe_you/ui/widgets/custom_button.dart';
 import 'package:how_much_do_i_owe_you/ui/widgets/custom_input_field.dart';
+import 'package:how_much_do_i_owe_you/providers/auth_provider.dart';
 import 'dart:io';
 import '../../../config/app_theme.dart';
 
@@ -11,8 +13,7 @@ class RegistrationScreen extends StatefulWidget {
   const RegistrationScreen({super.key});
 
   @override
-  State<RegistrationScreen> createState() =>
-      _RegistrationScreenState();
+  State<RegistrationScreen> createState() => _RegistrationScreenState();
 }
 
 class _RegistrationScreenState extends State<RegistrationScreen> {
@@ -24,7 +25,6 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
 
   File? _profileImage;
   bool _acceptedTerms = false;
-  bool _isLoading = false;
 
   @override
   void dispose() {
@@ -41,45 +41,62 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     });
   }
 
-  void _register() {
+  Future<void> _register() async {
     if (_formKey.currentState!.validate() && _acceptedTerms) {
-      setState(() {
-        _isLoading = true;
-      });
+      final authProvider = Provider.of<AuthProvider>(context, listen: false);
 
-      // Here you would typically register with Firebase
-      // For now, we'll just simulate a delay
-      Future.delayed(const Duration(seconds: 1), () {
-        setState(() {
-          _isLoading = false;
-        });
+      final success = await authProvider.register(
+        _emailController.text.trim(),
+        _passwordController.text,
+        _displayNameController.text.trim(),
+        _profileImage,
+      );
 
-        // Navigate to home screen (to be implemented)
+      if (success && mounted) {
+        // Show success message
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Registration successful')),
+          const SnackBar(
+            content: Text(
+              'Registration successful! Please log in with your credentials',
+            ),
+            backgroundColor: AppTheme.secondaryColor,
+            duration: Duration(seconds: 5),
+          ),
         );
-      });
+
+        // Sign out to clear any auth state
+        await authProvider.signOut();
+
+        // Navigate back to login screen
+        Navigator.of(context).pushReplacementNamed('/');
+      } else if (mounted) {
+        // Show error message
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(authProvider.errorMessage ?? 'Registration failed'),
+            backgroundColor: AppTheme.errorColor,
+          ),
+        );
+      }
     } else if (!_acceptedTerms) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please accept the terms of service'),
-        ),
+        const SnackBar(content: Text('Please accept the terms of service')),
       );
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final authProvider = Provider.of<AuthProvider>(context);
+    final isLoading = authProvider.isLoading;
+
     return Scaffold(
       backgroundColor: AppTheme.backgroundColor,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(
-            Icons.arrow_back,
-            color: AppTheme.textPrimaryColor,
-          ),
+          icon: const Icon(Icons.arrow_back, color: AppTheme.textPrimaryColor),
           onPressed: () => Navigator.pop(context),
         ),
         title: const Text(
@@ -95,14 +112,14 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
         child: SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.all(24.0),
-            child: _buildRegistrationForm(),
+            child: _buildRegistrationForm(isLoading),
           ),
         ),
       ),
     );
   }
 
-  Widget _buildRegistrationForm() {
+  Widget _buildRegistrationForm(bool isLoading) {
     return Form(
       key: _formKey,
       child: Column(
@@ -179,7 +196,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
           PrimaryButton(
             text: 'Create Account',
             onPressed: _register,
-            isLoading: _isLoading,
+            isLoading: isLoading,
           ),
 
           const SizedBox(height: 24),
@@ -231,9 +248,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
             child: Text.rich(
               TextSpan(
                 text: 'I agree to the ',
-                style: const TextStyle(
-                  color: AppTheme.textSecondaryColor,
-                ),
+                style: const TextStyle(color: AppTheme.textSecondaryColor),
                 children: [
                   TextSpan(
                     text: 'Terms of Service',

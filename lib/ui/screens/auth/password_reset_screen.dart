@@ -1,22 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:how_much_do_i_owe_you/ui/screens/auth/utils/form_validators.dart';
 import 'package:how_much_do_i_owe_you/ui/screens/auth/widgets/headers.dart';
 import 'package:how_much_do_i_owe_you/ui/widgets/custom_button.dart';
 import 'package:how_much_do_i_owe_you/ui/widgets/custom_input_field.dart';
+import 'package:how_much_do_i_owe_you/providers/auth_provider.dart';
 import '../../../config/app_theme.dart';
 
 class PasswordResetScreen extends StatefulWidget {
   const PasswordResetScreen({super.key});
 
   @override
-  State<PasswordResetScreen> createState() =>
-      _PasswordResetScreenState();
+  State<PasswordResetScreen> createState() => _PasswordResetScreenState();
 }
 
 class _PasswordResetScreenState extends State<PasswordResetScreen> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
-  bool _isLoading = false;
   bool _resetEmailSent = false;
 
   @override
@@ -25,35 +25,44 @@ class _PasswordResetScreenState extends State<PasswordResetScreen> {
     super.dispose();
   }
 
-  void _resetPassword() {
+  Future<void> _resetPassword() async {
     if (_formKey.currentState!.validate()) {
-      setState(() {
-        _isLoading = true;
-      });
+      final authProvider = Provider.of<AuthProvider>(context, listen: false);
 
-      // Here you would typically send a password reset email with Firebase
-      // For now, we'll just simulate a delay and success
-      Future.delayed(const Duration(seconds: 1), () {
+      final success = await authProvider.resetPassword(
+        _emailController.text.trim(),
+      );
+
+      if (success && mounted) {
         setState(() {
-          _isLoading = false;
           _resetEmailSent = true;
         });
-      });
+      } else if (mounted) {
+        // Show error message
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              authProvider.errorMessage ?? 'Failed to send reset email',
+            ),
+            backgroundColor: AppTheme.errorColor,
+          ),
+        );
+      }
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final authProvider = Provider.of<AuthProvider>(context);
+    final isLoading = authProvider.isLoading;
+
     return Scaffold(
       backgroundColor: AppTheme.backgroundColor,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(
-            Icons.arrow_back,
-            color: AppTheme.textPrimaryColor,
-          ),
+          icon: const Icon(Icons.arrow_back, color: AppTheme.textPrimaryColor),
           onPressed: () => Navigator.pop(context),
         ),
         title: const Text(
@@ -71,13 +80,13 @@ class _PasswordResetScreenState extends State<PasswordResetScreen> {
           child:
               _resetEmailSent
                   ? _buildSuccessView(context)
-                  : _buildResetForm(context),
+                  : _buildResetForm(context, isLoading),
         ),
       ),
     );
   }
 
-  Widget _buildResetForm(BuildContext context) {
+  Widget _buildResetForm(BuildContext context, bool isLoading) {
     return Form(
       key: _formKey,
       child: Column(
@@ -103,7 +112,7 @@ class _PasswordResetScreenState extends State<PasswordResetScreen> {
           PrimaryButton(
             text: 'Reset Password',
             onPressed: _resetPassword,
-            isLoading: _isLoading,
+            isLoading: isLoading,
           ),
 
           const SizedBox(height: 24),
@@ -156,10 +165,7 @@ class _PasswordResetScreenState extends State<PasswordResetScreen> {
         const SizedBox(height: 16),
         const Text(
           'Check your inbox and follow the instructions to reset your password.',
-          style: TextStyle(
-            fontSize: 14,
-            color: AppTheme.textSecondaryColor,
-          ),
+          style: TextStyle(fontSize: 14, color: AppTheme.textSecondaryColor),
           textAlign: TextAlign.center,
         ),
         const SizedBox(height: 32),
@@ -167,10 +173,10 @@ class _PasswordResetScreenState extends State<PasswordResetScreen> {
         // Didn't receive email button
         TextButton(
           onPressed: () {
-            // Resend email logic would go here
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Reset email resent')),
-            );
+            setState(() {
+              _resetEmailSent = false;
+            });
+            _resetPassword();
           },
           child: const Text(
             'Didn\'t receive the email? Send again',
