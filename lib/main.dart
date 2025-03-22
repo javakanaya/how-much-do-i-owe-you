@@ -1,6 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:how_much_do_i_owe_you/providers/balance_provider.dart';
 import 'package:provider/provider.dart';
 import 'firebase_options.dart';
 import 'config/app_theme.dart';
@@ -32,6 +33,10 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => AuthProvider(AuthService())),
+        // Add this line to register your BalanceProvider
+        ChangeNotifierProvider<BalanceProvider>(
+          create: (_) => BalanceProvider(),
+        ),
       ],
       child: Consumer<AuthProvider>(
         builder: (context, authProvider, _) {
