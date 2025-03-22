@@ -45,7 +45,6 @@ class BalanceSummaryWidget extends StatelessWidget {
         balanceText = 'you owe';
         break;
       case BalanceStatus.zero:
-      default:
         // All settled up
         textColor = const Color(0xFF757575); // Neutral gray
         backgroundColor = const Color(0xFFF5F5F5); // Light gray background

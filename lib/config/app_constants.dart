@@ -13,6 +13,9 @@ class AppConstants {
   static const String newTransactionRoute = '/new-transaction';
   static const String profileRoute = '/profile';
   static const String settingsRoute = '/settings';
+  static const String settlementHistoryRoute = '/settlement-history';
+  static const String settlementDetailRoute = '/settlement-detail';
+  static const String settlementCreationRoute = '/settlement-creation';
 
   // Firebase collections
   static const String usersCollection = 'users';

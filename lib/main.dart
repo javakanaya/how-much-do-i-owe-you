@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:how_much_do_i_owe_you/providers/activity_provider.dart';
 import 'package:how_much_do_i_owe_you/providers/balance_provider.dart';
+import 'package:how_much_do_i_owe_you/providers/settlement_provider.dart';
 import 'package:how_much_do_i_owe_you/providers/transaction_provider.dart';
 import 'package:how_much_do_i_owe_you/services/balance_service.dart';
 import 'package:provider/provider.dart';
@@ -55,6 +56,11 @@ class MyApp extends StatelessWidget {
         // Register ActivityProvider
         ChangeNotifierProvider<ActivityProvider>(
           create: (_) => ActivityProvider(),
+        ),
+
+        // Register SettlementProvider
+        ChangeNotifierProvider<SettlementProvider>(
+          create: (_) => SettlementProvider(),
         ),
       ],
       child: Consumer<AuthProvider>(

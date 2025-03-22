@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:how_much_do_i_owe_you/ui/screens/activity/transaction_detail_screen.dart';
+import 'package:how_much_do_i_owe_you/ui/screens/settlement/settlement_creation_screen.dart';
+import 'package:how_much_do_i_owe_you/ui/screens/settlement/settlement_detail_scren.dart';
+import 'package:how_much_do_i_owe_you/ui/screens/settlement/settlement_history_screen.dart';
 import 'package:how_much_do_i_owe_you/ui/screens/transaction/transaction_creation_screen.dart';
 import 'package:how_much_do_i_owe_you/ui/widgets/custom_navigation_bar.dart';
 
@@ -106,6 +109,58 @@ class AppRouter {
               return const LoginScreen();
             }
             return TransactionDetailScreen(transactionId: transactionId);
+          },
+        );
+
+      case AppConstants.settlementCreationRoute:
+        // Extract the user ID and name from settings arguments
+        final Map<String, dynamic> args =
+            settings.arguments as Map<String, dynamic>;
+
+        return MaterialPageRoute(
+          builder: (context) {
+            // If not authenticated, redirect to login
+            if (!Provider.of<AuthProvider>(
+              context,
+              listen: false,
+            ).isAuthenticated) {
+              return const LoginScreen();
+            }
+            return SettlementCreationScreen(
+              userId: args['userId'],
+              userName: args['userName'],
+            );
+          },
+        );
+
+      case AppConstants.settlementDetailRoute:
+        // Extract the settlement ID from settings arguments
+        final String settlementId = settings.arguments as String;
+
+        return MaterialPageRoute(
+          builder: (context) {
+            // If not authenticated, redirect to login
+            if (!Provider.of<AuthProvider>(
+              context,
+              listen: false,
+            ).isAuthenticated) {
+              return const LoginScreen();
+            }
+            return SettlementDetailScreen(settlementId: settlementId);
+          },
+        );
+
+      case AppConstants.settlementHistoryRoute:
+        return MaterialPageRoute(
+          builder: (context) {
+            // If not authenticated, redirect to login
+            if (!Provider.of<AuthProvider>(
+              context,
+              listen: false,
+            ).isAuthenticated) {
+              return const LoginScreen();
+            }
+            return const SettlementHistoryScreen();
           },
         );
 

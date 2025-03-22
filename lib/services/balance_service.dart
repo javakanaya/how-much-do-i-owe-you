@@ -200,4 +200,54 @@ class BalanceService {
       throw Exception('Failed to update balance: $e');
     }
   }
+
+  // Update balance after a settlement
+  Future<void> updateBalanceAfterSettlement(
+    String payerId,
+    String receiverId,
+    double amount,
+  ) async {
+    try {
+      // Get existing balance between users
+      BalanceModel? existingBalance = await getBalanceBetweenUsers(
+        payerId,
+        receiverId,
+      );
+
+      if (existingBalance != null) {
+        // Update existing balance
+        double newAmount = existingBalance.amount;
+
+        // If payer is userIdA, add amount; otherwise subtract
+        if (existingBalance.userIdA == payerId) {
+          newAmount += amount;
+        } else {
+          newAmount -= amount;
+        }
+
+        // Update balance
+        final updatedBalance = existingBalance.copyWith(
+          amount: newAmount,
+          lastUpdated: DateTime.now(),
+        );
+
+        await updateBalance(updatedBalance);
+      } else {
+        // This shouldn't happen for a settlement (as there should already be a balance)
+        // but we'll handle it just in case
+        final newBalance = BalanceModel(
+          balanceId: '', // Will be set by createBalance
+          userIdA: payerId,
+          userIdB: receiverId,
+          amount: amount,
+          lastUpdated: DateTime.now(),
+        );
+
+        await createBalance(newBalance);
+      }
+    } catch (e) {
+      debugPrint('Error updating balance after settlement: $e');
+      throw Exception('Failed to update balance: $e');
+    }
+  }
 }
