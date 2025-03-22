@@ -7,7 +7,6 @@ class TransactionModel {
   final double amount;
   final DateTime date;
   final String payerId;
-  final String categoryId;
   final String status; // 'active', 'settled', 'canceled'
   final List<String> participants; // List of participant IDs
 
@@ -17,7 +16,6 @@ class TransactionModel {
     required this.amount,
     required this.date,
     required this.payerId,
-    required this.categoryId,
     required this.status,
     required this.participants,
   });
@@ -30,7 +28,6 @@ class TransactionModel {
       'amount': amount,
       'date': Timestamp.fromDate(date),
       'payerId': payerId,
-      'categoryId': categoryId,
       'status': status,
       'participants': participants,
     };
@@ -54,7 +51,6 @@ class TransactionModel {
               : data['amount'] ?? 0.0,
       date: (data['date'] as Timestamp).toDate(),
       payerId: data['payerId'] ?? '',
-      categoryId: data['categoryId'] ?? '',
       status: data['status'] ?? 'active',
       participants: participantsList,
     );
@@ -77,7 +73,6 @@ class TransactionModel {
       amount: amount ?? this.amount,
       date: date ?? this.date,
       payerId: payerId ?? this.payerId,
-      categoryId: categoryId ?? this.categoryId,
       status: status ?? this.status,
       participants: participants ?? this.participants,
     );
