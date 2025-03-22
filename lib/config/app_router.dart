@@ -6,7 +6,7 @@ import '../providers/auth_provider.dart';
 import '../ui/screens/auth/login_screen.dart';
 import '../ui/screens/auth/registration_screen.dart';
 import '../ui/screens/auth/password_reset_screen.dart';
-import '../ui/screens/dashboard/home_screen.dart';
+import '../ui/screens/home/home_screen.dart';
 // Import other screens as they are created
 
 class AppRouter {

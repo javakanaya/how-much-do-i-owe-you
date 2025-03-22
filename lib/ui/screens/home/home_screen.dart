@@ -1,8 +1,8 @@
 // ui/screens/home/home_screen.dart
 import 'package:flutter/material.dart';
 import 'package:how_much_do_i_owe_you/config/app_constants.dart';
-import 'package:how_much_do_i_owe_you/ui/screens/dashboard/widgets/balance_summary_widget.dart';
-import 'package:how_much_do_i_owe_you/ui/screens/dashboard/widgets/greeting_widget.dart';
+import 'package:how_much_do_i_owe_you/ui/screens/home/widgets/balance_summary_widget.dart';
+import 'package:how_much_do_i_owe_you/ui/screens/home/widgets/greeting_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import 'package:how_much_do_i_owe_you/providers/auth_provider.dart';
