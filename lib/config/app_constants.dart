@@ -8,6 +8,7 @@ class AppConstants {
   static const String registerRoute = '/register';
   static const String passwordResetRoute = '/password-reset';
   static const String homeRoute = '/home';
+  static const String activityRoute = '/activity';
   static const String transactionDetailRoute = '/transaction-detail';
   static const String newTransactionRoute = '/new-transaction';
   static const String profileRoute = '/profile';

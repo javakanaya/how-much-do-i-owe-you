@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:how_much_do_i_owe_you/ui/screens/activity/activity_screen.dart';
+import 'package:how_much_do_i_owe_you/ui/screens/activity/transaction_detail_screen.dart';
+import 'package:how_much_do_i_owe_you/ui/screens/home/home_screen.dart';
 import 'package:how_much_do_i_owe_you/ui/screens/transaction/transaction_creation_screen.dart';
 import 'package:provider/provider.dart';
 import '../config/app_constants.dart';
@@ -6,8 +9,6 @@ import '../providers/auth_provider.dart';
 import '../ui/screens/auth/login_screen.dart';
 import '../ui/screens/auth/registration_screen.dart';
 import '../ui/screens/auth/password_reset_screen.dart';
-import '../ui/screens/home/home_screen.dart';
-// Import other screens as they are created
 
 class AppRouter {
   static Route<dynamic> generateRoute(RouteSettings settings) {
@@ -57,6 +58,39 @@ class AppRouter {
               return const LoginScreen();
             }
             return const TransactionCreationScreen();
+          },
+        );
+
+      // Add route for Activity Screen
+      case AppConstants.activityRoute:
+        return MaterialPageRoute(
+          builder: (context) {
+            // If not authenticated, redirect to login
+            if (!Provider.of<AuthProvider>(
+              context,
+              listen: false,
+            ).isAuthenticated) {
+              return const LoginScreen();
+            }
+            return const ActivityScreen();
+          },
+        );
+
+      // Add route for Transaction Detail Screen
+      case AppConstants.transactionDetailRoute:
+        // Extract the transaction ID from settings arguments
+        final String transactionId = settings.arguments as String;
+
+        return MaterialPageRoute(
+          builder: (context) {
+            // If not authenticated, redirect to login
+            if (!Provider.of<AuthProvider>(
+              context,
+              listen: false,
+            ).isAuthenticated) {
+              return const LoginScreen();
+            }
+            return TransactionDetailScreen(transactionId: transactionId);
           },
         );
 

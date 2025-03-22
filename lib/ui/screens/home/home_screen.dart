@@ -1,4 +1,3 @@
-// ui/screens/home/home_screen.dart
 import 'package:flutter/material.dart';
 import 'package:how_much_do_i_owe_you/config/app_constants.dart';
 import 'package:how_much_do_i_owe_you/ui/screens/home/widgets/balance_summary_widget.dart';
@@ -101,7 +100,13 @@ class _HomeScreenState extends State<HomeScreen> {
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: 0,
         onTap: (index) {
-          // Handle navigation
+          if (index == 1) {
+            // Navigate to Activity screen
+            Navigator.pushReplacementNamed(context, AppConstants.activityRoute);
+          } else if (index == 2) {
+            // Navigate to Profile screen
+            Navigator.pushReplacementNamed(context, AppConstants.profileRoute);
+          }
         },
         items: const [
           BottomNavigationBarItem(

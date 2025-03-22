@@ -129,19 +129,27 @@ class TransactionService {
     }
   }
 
-  // Get transactions for a specific user
+  // Get transactions for a specific user - MODIFIED to avoid index requirement
   Future<List<TransactionModel>> getTransactionsForUser(String userId) async {
     try {
+      // Using a simpler query that doesn't require a compound index
+      // Only query by participants array-contains
       final querySnapshot =
           await _firestore
               .collection(AppConstants.transactionsCollection)
               .where('participants', arrayContains: userId)
-              .orderBy('date', descending: true)
               .get();
 
-      return querySnapshot.docs
-          .map((doc) => TransactionModel.fromFirestore(doc))
-          .toList();
+      // After getting the data, we'll sort it in memory
+      final transactions =
+          querySnapshot.docs
+              .map((doc) => TransactionModel.fromFirestore(doc))
+              .toList();
+
+      // Sort in memory (descending by date)
+      transactions.sort((a, b) => b.date.compareTo(a.date));
+
+      return transactions;
     } catch (e) {
       debugPrint('Error getting transactions: $e');
       return [];
@@ -274,5 +282,3 @@ class TransactionService {
     }
   }
 }
-
-// Note: Using ParticipantModel from models instead of a separate TransactionParticipant class
