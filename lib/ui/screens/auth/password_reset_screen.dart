@@ -3,9 +3,10 @@ import 'package:how_much_do_i_owe_you/ui/screens/auth/utils/form_validators.dart
 import 'package:how_much_do_i_owe_you/ui/screens/auth/widgets/headers.dart';
 import 'package:how_much_do_i_owe_you/ui/widgets/custom_button.dart';
 import 'package:how_much_do_i_owe_you/ui/widgets/custom_input_field.dart';
+import '../../../config/app_theme.dart';
 
 class PasswordResetScreen extends StatefulWidget {
-  const PasswordResetScreen({Key? key}) : super(key: key);
+  const PasswordResetScreen({super.key});
 
   @override
   State<PasswordResetScreen> createState() =>
@@ -44,21 +45,21 @@ class _PasswordResetScreenState extends State<PasswordResetScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF0F5FF),
+      backgroundColor: AppTheme.backgroundColor,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
           icon: const Icon(
             Icons.arrow_back,
-            color: Color(0xFF1A1A1A),
+            color: AppTheme.textPrimaryColor,
           ),
           onPressed: () => Navigator.pop(context),
         ),
         title: const Text(
           'Reset Password',
           style: TextStyle(
-            color: Color(0xFF1A1A1A),
+            color: AppTheme.textPrimaryColor,
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -114,7 +115,7 @@ class _PasswordResetScreenState extends State<PasswordResetScreen> {
               icon: const Icon(Icons.arrow_back),
               label: const Text('Back to Login'),
               style: TextButton.styleFrom(
-                foregroundColor: const Color(0xFF757575),
+                foregroundColor: AppTheme.textSecondaryColor,
               ),
             ),
           ),
@@ -131,7 +132,7 @@ class _PasswordResetScreenState extends State<PasswordResetScreen> {
         const Icon(
           Icons.check_circle_outline,
           size: 80,
-          color: Color(0xFF2ED573), // Green from your design
+          color: AppTheme.secondaryColor,
         ),
         const SizedBox(height: 24),
         const Text(
@@ -139,7 +140,7 @@ class _PasswordResetScreenState extends State<PasswordResetScreen> {
           style: TextStyle(
             fontSize: 24,
             fontWeight: FontWeight.bold,
-            color: Color(0xFF1A1A1A),
+            color: AppTheme.textPrimaryColor,
           ),
           textAlign: TextAlign.center,
         ),
@@ -148,14 +149,17 @@ class _PasswordResetScreenState extends State<PasswordResetScreen> {
           'We sent a password reset link to\n${_emailController.text}',
           style: const TextStyle(
             fontSize: 16,
-            color: Color(0xFF757575),
+            color: AppTheme.textSecondaryColor,
           ),
           textAlign: TextAlign.center,
         ),
         const SizedBox(height: 16),
         const Text(
           'Check your inbox and follow the instructions to reset your password.',
-          style: TextStyle(fontSize: 14, color: Color(0xFF757575)),
+          style: TextStyle(
+            fontSize: 14,
+            color: AppTheme.textSecondaryColor,
+          ),
           textAlign: TextAlign.center,
         ),
         const SizedBox(height: 32),
@@ -171,7 +175,7 @@ class _PasswordResetScreenState extends State<PasswordResetScreen> {
           child: const Text(
             'Didn\'t receive the email? Send again',
             style: TextStyle(
-              color: Color(0xFF2176FF),
+              color: AppTheme.primaryColor,
               fontWeight: FontWeight.w500,
             ),
           ),

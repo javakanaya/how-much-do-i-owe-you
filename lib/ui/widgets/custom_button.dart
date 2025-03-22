@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:how_much_do_i_owe_you/config/app_theme.dart';
 
 class PrimaryButton extends StatelessWidget {
   final String text;
@@ -19,10 +20,8 @@ class PrimaryButton extends StatelessWidget {
     return ElevatedButton(
       onPressed: isLoading ? null : onPressed,
       style: ElevatedButton.styleFrom(
-        backgroundColor: const Color(
-          0xFF2176FF,
-        ), // Blue from your design
-        foregroundColor: Colors.white,
+        backgroundColor: AppTheme.primaryColor,
+        foregroundColor: AppTheme.whiteColor,
         minimumSize: Size(
           double.infinity,
           height,

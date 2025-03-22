@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:how_much_do_i_owe_you/ui/screens/auth/utils/form_validators.dart';
 import 'package:how_much_do_i_owe_you/ui/screens/auth/widgets/password_input_field.dart';
-import 'dart:io';
-
 import 'package:how_much_do_i_owe_you/ui/screens/auth/widgets/profile_image_picker.dart';
 import 'package:how_much_do_i_owe_you/ui/widgets/custom_button.dart';
 import 'package:how_much_do_i_owe_you/ui/widgets/custom_input_field.dart';
+import 'dart:io';
+import '../../../config/app_theme.dart';
 
 class RegistrationScreen extends StatefulWidget {
   const RegistrationScreen({super.key});
@@ -71,14 +71,14 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF0F5FF),
+      backgroundColor: AppTheme.backgroundColor,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
           icon: const Icon(
             Icons.arrow_back,
-            color: Color(0xFF1A1A1A),
+            color: AppTheme.textPrimaryColor,
           ),
           onPressed: () => Navigator.pop(context),
         ),
@@ -190,7 +190,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
             children: [
               const Text(
                 'Already have an account? ',
-                style: TextStyle(color: Color(0xFF757575)),
+                style: TextStyle(color: AppTheme.textSecondaryColor),
               ),
               GestureDetector(
                 onTap: () => Navigator.pop(context),
@@ -219,7 +219,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
               _acceptedTerms = value ?? false;
             });
           },
-          activeColor: const Color(0xFF2176FF),
+          activeColor: AppTheme.primaryColor,
         ),
         Expanded(
           child: GestureDetector(
@@ -231,7 +231,9 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
             child: Text.rich(
               TextSpan(
                 text: 'I agree to the ',
-                style: const TextStyle(color: Color(0xFF757575)),
+                style: const TextStyle(
+                  color: AppTheme.textSecondaryColor,
+                ),
                 children: [
                   TextSpan(
                     text: 'Terms of Service',

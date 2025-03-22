@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:how_much_do_i_owe_you/config/app_theme.dart';
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
 
@@ -9,12 +10,12 @@ class ProfileImagePicker extends StatelessWidget {
   final double radius;
 
   const ProfileImagePicker({
-    Key? key,
+    super.key,
     required this.profileImage,
     required this.onTap,
     this.displayName,
     this.radius = 50,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +25,7 @@ class ProfileImagePicker extends StatelessWidget {
         children: [
           CircleAvatar(
             radius: radius,
-            backgroundColor: const Color(0xFFE6F0FF),
+            backgroundColor: AppTheme.borderColor,
             backgroundImage:
                 profileImage != null
                     ? FileImage(profileImage!) as ImageProvider
@@ -38,7 +39,7 @@ class ProfileImagePicker extends StatelessWidget {
                       style: const TextStyle(
                         fontSize: 36,
                         fontWeight: FontWeight.bold,
-                        color: Color(0xFF2176FF),
+                        color: AppTheme.primaryColor,
                       ),
                     )
                     : null,
@@ -48,10 +49,10 @@ class ProfileImagePicker extends StatelessWidget {
             right: 0,
             child: Container(
               decoration: BoxDecoration(
-                color: const Color(0xFF2176FF),
+                color: AppTheme.primaryColor,
                 shape: BoxShape.circle,
                 border: Border.all(
-                  color: const Color(0xFFF0F5FF),
+                  color: AppTheme.backgroundColor,
                   width: 2,
                 ),
               ),

@@ -4,6 +4,7 @@ import 'package:how_much_do_i_owe_you/ui/screens/auth/widgets/headers.dart';
 import 'package:how_much_do_i_owe_you/ui/screens/auth/widgets/password_input_field.dart';
 import 'package:how_much_do_i_owe_you/ui/widgets/custom_button.dart';
 import 'package:how_much_do_i_owe_you/ui/widgets/custom_input_field.dart';
+import '../../../config/app_theme.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -57,7 +58,7 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF0F5FF),
+      backgroundColor: AppTheme.backgroundColor,
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
@@ -123,7 +124,9 @@ class _LoginScreenState extends State<LoginScreen> {
                       children: [
                         const Text(
                           "Don't have an account? ",
-                          style: TextStyle(color: Color(0xFF757575)),
+                          style: TextStyle(
+                            color: AppTheme.textSecondaryColor,
+                          ),
                         ),
                         GestureDetector(
                           onTap: _navigateToRegister,
