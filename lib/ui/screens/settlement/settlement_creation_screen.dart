@@ -1,6 +1,6 @@
 // ui/screens/settlement/settlement_creation_screen.dart
 import 'package:flutter/material.dart';
-import 'package:how_much_do_i_owe_you/ui/screens/settlement/widgets/settlement_details_bottom_bar.dart';
+import 'package:how_much_do_i_owe_you/ui/screens/settlement/widgets/settlement_creation_bottom_bar.dart';
 import 'package:provider/provider.dart';
 import 'package:how_much_do_i_owe_you/config/app_theme.dart';
 import 'package:how_much_do_i_owe_you/providers/settlement_provider.dart';
@@ -169,7 +169,7 @@ class _SettlementCreationScreenState extends State<SettlementCreationScreen> {
             ),
 
             // Bottom action bar
-            SettlementDetailsBottomBar(
+            SettlementCreationBottomBar(
               selectedTransactionIds: _selectedTransactionIds,
               isCreatingSettlement: settlementProvider.isCreatingSettlement,
               onCreateSettlement: _createSettlement,

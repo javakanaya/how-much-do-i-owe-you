@@ -2,12 +2,12 @@
 import 'package:flutter/material.dart';
 import 'package:how_much_do_i_owe_you/ui/widgets/custom_button.dart';
 
-class SettlementDetailsBottomBar extends StatelessWidget {
+class SettlementCreationBottomBar extends StatelessWidget {
   final Set<String> selectedTransactionIds;
   final bool isCreatingSettlement;
   final VoidCallback onCreateSettlement;
 
-  const SettlementDetailsBottomBar({
+  const SettlementCreationBottomBar({
     super.key,
     required this.selectedTransactionIds,
     required this.isCreatingSettlement,
