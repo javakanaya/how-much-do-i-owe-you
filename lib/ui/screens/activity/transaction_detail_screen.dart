@@ -299,6 +299,7 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
               : _transaction == null
               ? const Center(child: Text('Transaction not found'))
               : SafeArea(
+                bottom: false,
                 child: Column(
                   children: [
                     // Transaction details
@@ -321,7 +322,12 @@ class _TransactionDetailScreenState extends State<TransactionDetailScreen> {
                     // Settle button for non-payers who haven't settled
                     if (canSettle)
                       Container(
-                        padding: const EdgeInsets.all(16.0),
+                        padding: const EdgeInsets.only(
+                          left: 16.0,
+                          right: 16.0,
+                          top: 16.0,
+                          bottom: 32.0,
+                        ),
                         decoration: BoxDecoration(
                           color: Colors.white,
                           boxShadow: [
