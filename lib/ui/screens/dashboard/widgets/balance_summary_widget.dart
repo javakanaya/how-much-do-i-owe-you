@@ -1,12 +1,21 @@
-// ui/widgets/home/balance_summary_widget.dart
+// ui/screens/dashboard/widgets/balance_summary_widget.dart
 import 'package:flutter/material.dart';
+import 'package:how_much_do_i_owe_you/config/app_constants.dart';
+import 'package:intl/intl.dart'; // Import for currency formatting
 import 'package:how_much_do_i_owe_you/config/app_theme.dart';
 import 'package:how_much_do_i_owe_you/providers/balance_provider.dart';
 
 class BalanceSummaryWidget extends StatelessWidget {
   final BalanceProvider balanceProvider;
 
-  const BalanceSummaryWidget({super.key, required this.balanceProvider});
+  // Currency formatter for Rupiah
+  final rupiahFormat = NumberFormat.currency(
+    locale: AppConstants.currencyLocale,
+    symbol: AppConstants.currencySymbol,
+    decimalDigits: 0,
+  );
+
+  BalanceSummaryWidget({super.key, required this.balanceProvider});
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +38,7 @@ class BalanceSummaryWidget extends StatelessWidget {
           Row(
             children: [
               Text(
-                '\$${balanceProvider.totalBalance.abs().toStringAsFixed(2)}',
+                rupiahFormat.format(balanceProvider.totalBalance.abs()),
                 style: const TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,

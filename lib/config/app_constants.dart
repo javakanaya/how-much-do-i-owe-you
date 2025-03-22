@@ -29,6 +29,11 @@ class AppConstants {
   static const String dateFormatDisplay = 'dd MMMM yyyy';
   static const String dateTimeFormatDisplay = 'dd MMM yyyy, hh:mm a';
 
+  // Currency settings
+  static const String currencySymbol = 'Rp';
+  static const String currencyLocale = 'id_ID';
+  static const int currencyDecimalDigits = 0;
+
   // App settings
   static const double defaultPadding = 16.0;
   static const double cardBorderRadius = 15.0;

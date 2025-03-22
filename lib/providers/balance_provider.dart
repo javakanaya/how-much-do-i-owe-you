@@ -1,5 +1,7 @@
 // providers/balance_provider.dart
 import 'package:flutter/foundation.dart';
+import 'package:how_much_do_i_owe_you/config/app_constants.dart';
+import 'package:intl/intl.dart'; // Import for currency formatting
 import '../models/balance_model.dart';
 import '../models/person_balance_model.dart';
 import '../services/balance_service.dart';
@@ -24,6 +26,13 @@ class BalanceProvider with ChangeNotifier {
 
   // Error state
   String? _errorMessage;
+
+  // Currency formatter for Rupiah
+  final rupiahFormat = NumberFormat.currency(
+    locale: AppConstants.currencyLocale,
+    symbol: AppConstants.currencySymbol,
+    decimalDigits: 0,
+  );
 
   // Getters
   double get totalBalance => _totalBalance;
@@ -171,7 +180,7 @@ class BalanceProvider with ChangeNotifier {
   // Get formatted total balance string
   String getFormattedTotalBalance() {
     final absBalance = _totalBalance.abs();
-    final formattedBalance = '\$${absBalance.toStringAsFixed(2)}';
+    final formattedBalance = rupiahFormat.format(absBalance);
 
     if (_totalBalance > 0) {
       return '$formattedBalance you are owed';

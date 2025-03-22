@@ -1,5 +1,6 @@
 // ui/screens/home/home_screen.dart
 import 'package:flutter/material.dart';
+import 'package:how_much_do_i_owe_you/config/app_constants.dart';
 import 'package:how_much_do_i_owe_you/ui/screens/dashboard/widgets/balance_summary_widget.dart';
 import 'package:how_much_do_i_owe_you/ui/screens/dashboard/widgets/greeting_widget.dart';
 import 'package:provider/provider.dart';
@@ -76,10 +77,9 @@ class _HomeScreenState extends State<HomeScreen> {
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           // Navigate to add transaction screen
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => Placeholder()),
-          ).then((value) {
+          Navigator.pushNamed(context, AppConstants.newTransactionRoute).then((
+            value,
+          ) {
             // Refresh data when returning from add transaction screen
             if (value == true) {
               final authProvider = Provider.of<AuthProvider>(
@@ -90,7 +90,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 Provider.of<BalanceProvider>(
                   context,
                   listen: false,
-                ).initialize(authProvider.userModel!.userId);
+                ).fetchBalances();
               }
             }
           });

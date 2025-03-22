@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:how_much_do_i_owe_you/ui/screens/transaction/transaction_creation_screen.dart';
 import 'package:provider/provider.dart';
 import '../config/app_constants.dart';
 import '../providers/auth_provider.dart';
@@ -45,7 +46,19 @@ class AppRouter {
           },
         );
 
-      // Add cases for other routes as they are created
+      case AppConstants.newTransactionRoute:
+        return MaterialPageRoute(
+          builder: (context) {
+            // If not authenticated, redirect to login
+            if (!Provider.of<AuthProvider>(
+              context,
+              listen: false,
+            ).isAuthenticated) {
+              return const LoginScreen();
+            }
+            return const TransactionCreationScreen();
+          },
+        );
 
       // Default route for undefined routes
       default:

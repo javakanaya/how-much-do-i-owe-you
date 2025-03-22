@@ -151,4 +151,53 @@ class BalanceService {
       return null;
     }
   }
+
+  // Update balance after a transaction
+  Future<void> updateBalanceAfterTransaction(
+    String payerId,
+    String borrowerId,
+    double amount,
+  ) async {
+    try {
+      // Get existing balance between users
+      BalanceModel? existingBalance = await getBalanceBetweenUsers(
+        payerId,
+        borrowerId,
+      );
+
+      if (existingBalance != null) {
+        // Update existing balance
+        double newAmount = existingBalance.amount;
+
+        // If payer is userIdA, add amount; otherwise subtract
+        if (existingBalance.userIdA == payerId) {
+          newAmount += amount;
+        } else {
+          newAmount -= amount;
+        }
+
+        // Update balance
+        final updatedBalance = existingBalance.copyWith(
+          amount: newAmount,
+          lastUpdated: DateTime.now(),
+        );
+
+        await updateBalance(updatedBalance);
+      } else {
+        // Create new balance
+        final newBalance = BalanceModel(
+          balanceId: '', // Will be set by createBalance
+          userIdA: payerId,
+          userIdB: borrowerId,
+          amount: amount,
+          lastUpdated: DateTime.now(),
+        );
+
+        await createBalance(newBalance);
+      }
+    } catch (e) {
+      debugPrint('Error updating balance after transaction: $e');
+      throw Exception('Failed to update balance: $e');
+    }
+  }
 }

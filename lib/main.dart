@@ -2,6 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:how_much_do_i_owe_you/providers/balance_provider.dart';
+import 'package:how_much_do_i_owe_you/providers/transaction_provider.dart';
 import 'package:how_much_do_i_owe_you/services/balance_service.dart';
 import 'package:provider/provider.dart';
 import 'firebase_options.dart';
@@ -43,6 +44,11 @@ class MyApp extends StatelessWidget {
         // Register BalanceProvider with BalanceService
         ChangeNotifierProvider<BalanceProvider>(
           create: (_) => BalanceProvider(balanceService),
+        ),
+
+        // Register TransactionProvider
+        ChangeNotifierProvider<TransactionProvider>(
+          create: (_) => TransactionProvider(),
         ),
       ],
       child: Consumer<AuthProvider>(

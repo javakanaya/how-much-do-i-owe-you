@@ -1,8 +1,10 @@
 // models/person_balance.dart
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:how_much_do_i_owe_you/models/balance_model.dart';
 import 'package:how_much_do_i_owe_you/models/user_model.dart';
 import 'package:how_much_do_i_owe_you/config/app_theme.dart';
+import 'package:how_much_do_i_owe_you/config/app_constants.dart';
 
 class PersonBalance {
   final String userId;
@@ -13,6 +15,13 @@ class PersonBalance {
   final int transactionCount;
   final double balance;
   final bool isPositive;
+
+  // Currency formatter for Rupiah
+  static final _rupiahFormat = NumberFormat.currency(
+    locale: AppConstants.currencyLocale,
+    symbol: AppConstants.currencySymbol,
+    decimalDigits: AppConstants.currencyDecimalDigits,
+  );
 
   PersonBalance({
     required this.userId,
@@ -58,6 +67,11 @@ class PersonBalance {
       balance: balanceAmount.abs(), // Store as absolute value for display
       isPositive: isPositive,
     );
+  }
+
+  // Get formatted balance as Rupiah
+  String getFormattedBalance() {
+    return _rupiahFormat.format(balance);
   }
 
   // Helper method to get initials from name
@@ -109,7 +123,7 @@ class PersonBalance {
         avatarColor: const Color(0xFFF0F7FF),
         textColor: AppTheme.primaryColor,
         transactionCount: 3,
-        balance: 42.50,
+        balance: 42500,
         isPositive: true,
       ),
       PersonBalance(
@@ -119,7 +133,7 @@ class PersonBalance {
         avatarColor: const Color(0xFFFFF0F0),
         textColor: const Color(0xFFFF4757),
         transactionCount: 1,
-        balance: 15.00,
+        balance: 15000,
         isPositive: false,
       ),
     ];
