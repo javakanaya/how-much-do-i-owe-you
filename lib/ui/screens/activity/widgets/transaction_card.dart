@@ -70,11 +70,14 @@ class _TransactionCardState extends State<TransactionCard> {
       final participants = await _transactionService
           .getParticipantsForTransaction(widget.transaction.transactionId);
 
-      setState(() {
-        _payer = payer;
-        _participants = participants;
-        _isLoading = false;
-      });
+      if (mounted) {
+        // Add this check
+        setState(() {
+          _payer = payer;
+          _participants = participants;
+          _isLoading = false;
+        });
+      }
     } catch (e) {
       setState(() {
         _errorMessage = 'Error loading transaction details';

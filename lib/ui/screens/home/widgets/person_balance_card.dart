@@ -21,7 +21,7 @@ class PersonBalanceCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Determine colors based on whether we owe them or they owe us
-    final bool weOweThem = !balance.isPositive;
+    final bool weOweThem = balance.isPositive;
     final Color primaryColor =
         weOweThem ? AppTheme.errorColor : AppTheme.primaryColor;
     final Color lightColor =

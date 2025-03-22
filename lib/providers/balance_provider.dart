@@ -193,9 +193,9 @@ class BalanceProvider with ChangeNotifier {
 
   // Determine if the total balance is positive, negative, or zero
   BalanceStatus getTotalBalanceStatus() {
-    if (_totalBalance > 0) {
+    if (_totalBalance < 0) {
       return BalanceStatus.positive;
-    } else if (_totalBalance < 0) {
+    } else if (_totalBalance > 0) {
       return BalanceStatus.negative;
     } else {
       return BalanceStatus.zero;

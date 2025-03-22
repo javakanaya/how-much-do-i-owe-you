@@ -156,7 +156,6 @@ class SettlementService {
           await _firestore
               .collection(AppConstants.settlementsCollection)
               .where('payerId', isEqualTo: userId)
-              .orderBy('date', descending: true)
               .get();
 
       // Get settlements where user is receiver
@@ -164,7 +163,6 @@ class SettlementService {
           await _firestore
               .collection(AppConstants.settlementsCollection)
               .where('receiverId', isEqualTo: userId)
-              .orderBy('date', descending: true)
               .get();
 
       // Combine results
@@ -175,7 +173,7 @@ class SettlementService {
         ),
       ];
 
-      // Sort by date (newest first)
+      // Sort in memory instead of in the query
       settlements.sort((a, b) => b.date.compareTo(a.date));
 
       return settlements;

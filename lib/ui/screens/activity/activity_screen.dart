@@ -116,38 +116,41 @@ class _ActivityScreenState extends State<ActivityScreen> {
   }
 
   Widget _buildEmptyState() {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(
-            Icons.receipt_long_outlined,
-            size: 80,
-            color: AppTheme.primaryColor.withOpacity(0.5),
-          ),
-          const SizedBox(height: 16),
-          const Text(
-            'No Transactions Yet',
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              color: AppTheme.textPrimaryColor,
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.receipt_long_outlined,
+              size: 80,
+              color: AppTheme.primaryColor.withOpacity(0.5),
             ),
-          ),
-          const SizedBox(height: 8),
-          const Text(
-            'Your transaction history will appear here',
-            style: TextStyle(color: AppTheme.textSecondaryColor),
-          ),
-          const SizedBox(height: 24),
-          PrimaryButton(
-            text: 'Add First Transaction',
-            icon: Icons.add,
-            onPressed: () {
-              Navigator.pushNamed(context, AppConstants.newTransactionRoute);
-            },
-          ),
-        ],
+            const SizedBox(height: 16),
+            const Text(
+              'No Transactions Yet',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: AppTheme.textPrimaryColor,
+              ),
+            ),
+            const SizedBox(height: 8),
+            const Text(
+              'Your transaction history will appear here',
+              style: TextStyle(color: AppTheme.textSecondaryColor),
+            ),
+            const SizedBox(height: 24),
+            PrimaryButton(
+              text: 'Add First Transaction',
+              icon: Icons.add,
+              onPressed: () {
+                Navigator.pushNamed(context, AppConstants.newTransactionRoute);
+              },
+            ),
+          ],
+        ),
       ),
     );
   }
