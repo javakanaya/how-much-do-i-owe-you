@@ -1,13 +1,14 @@
 // providers/balance_provider.dart
 import 'package:flutter/foundation.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:how_much_do_i_owe_you/models/balance_model.dart';
-import 'package:how_much_do_i_owe_you/models/user_model.dart';
-import 'package:how_much_do_i_owe_you/models/person_balance_model.dart';
-import 'package:how_much_do_i_owe_you/models/transaction_model.dart';
+import '../models/balance_model.dart';
+import '../models/person_balance_model.dart';
+import '../services/balance_service.dart';
 
 class BalanceProvider with ChangeNotifier {
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final BalanceService _balanceService;
+
+  // Constructor with dependency injection
+  BalanceProvider(this._balanceService);
 
   // Current user ID
   String? _currentUserId;
@@ -18,11 +19,17 @@ class BalanceProvider with ChangeNotifier {
   // Total balance (positive = owed to user, negative = user owes)
   double _totalBalance = 0.0;
 
-  // Getter for the total balance
-  double get totalBalance => _totalBalance;
+  // Loading state
+  bool _isLoading = false;
 
-  // Getter for all person balances
+  // Error state
+  String? _errorMessage;
+
+  // Getters
+  double get totalBalance => _totalBalance;
   List<PersonBalance> get personBalances => _personBalances;
+  bool get isLoading => _isLoading;
+  String? get errorMessage => _errorMessage;
 
   // Initialize with user ID
   void initialize(String userId) {
@@ -30,29 +37,17 @@ class BalanceProvider with ChangeNotifier {
     fetchBalances();
   }
 
-  // Fetch balances from Firestore
+  // Fetch balances from service
   Future<void> fetchBalances() async {
     if (_currentUserId == null) return;
 
     try {
-      // Get all balances where current user is either userIdA or userIdB
-      final querySnapshotA =
-          await _firestore
-              .collection('BALANCES')
-              .where('userIdA', isEqualTo: _currentUserId)
-              .get();
+      _setLoading(true);
 
-      final querySnapshotB =
-          await _firestore
-              .collection('BALANCES')
-              .where('userIdB', isEqualTo: _currentUserId)
-              .get();
-
-      // Combine results
-      final balanceModels = [
-        ...querySnapshotA.docs.map((doc) => BalanceModel.fromFirestore(doc)),
-        ...querySnapshotB.docs.map((doc) => BalanceModel.fromFirestore(doc)),
-      ];
+      // Get balances from service
+      final balanceModels = await _balanceService.fetchUserBalances(
+        _currentUserId!,
+      );
 
       // Reset total balance
       _totalBalance = 0.0;
@@ -65,16 +60,14 @@ class BalanceProvider with ChangeNotifier {
         // Get the other user's ID
         final otherUserId = balance.getOtherUserId(_currentUserId!);
 
-        // Get user data
-        final userDoc =
-            await _firestore.collection('USERS').doc(otherUserId).get();
+        // Get user data from service
+        final userModel = await _balanceService.fetchUserById(otherUserId);
 
-        if (!userDoc.exists) continue;
+        if (userModel == null) continue;
 
-        final userModel = UserModel.fromFirestore(userDoc);
-
-        // Count transactions
-        final transactionCount = await _countTransactions(otherUserId);
+        // Count transactions between users
+        final transactionCount = await _balanceService
+            .countTransactionsBetweenUsers(_currentUserId!, otherUserId);
 
         // Create PersonBalance object
         final personBalance = PersonBalance.fromModels(
@@ -88,8 +81,6 @@ class BalanceProvider with ChangeNotifier {
         newPersonBalances.add(personBalance);
 
         // Update total balance
-        // If positive (they owe us), add to total
-        // If negative (we owe them), subtract from total
         if (personBalance.isPositive) {
           _totalBalance += personBalance.balance;
         } else {
@@ -99,41 +90,16 @@ class BalanceProvider with ChangeNotifier {
 
       // Update the list
       _personBalances = newPersonBalances;
-      notifyListeners();
+      _errorMessage = null;
     } catch (e) {
-      print('Error fetching balances: $e');
-      // In case of error, use dummy data for development
+      debugPrint('Error in fetchBalances: $e');
+      _errorMessage = 'Failed to load balances. Please try again.';
+
+      // For development: use dummy data if there's an error
       _personBalances = PersonBalance.getDummyData();
       _totalBalance = 27.50; // 42.50 - 15.00
-      notifyListeners();
-    }
-  }
-
-  // Helper to count transactions between current user and another user
-  Future<int> _countTransactions(String otherUserId) async {
-    if (_currentUserId == null) return 0;
-
-    try {
-      // Get all transactions where both users are participants
-      final querySnapshot =
-          await _firestore
-              .collection('TRANSACTIONS')
-              .where('participants', arrayContains: _currentUserId)
-              .get();
-
-      // Filter to only include transactions with the other user
-      final relevantTransactions =
-          querySnapshot.docs
-              .map((doc) => TransactionModel.fromFirestore(doc))
-              .where(
-                (transaction) => transaction.participants.contains(otherUserId),
-              )
-              .toList();
-
-      return relevantTransactions.length;
-    } catch (e) {
-      print('Error counting transactions: $e');
-      return 0;
+    } finally {
+      _setLoading(false);
     }
   }
 
@@ -146,10 +112,67 @@ class BalanceProvider with ChangeNotifier {
     }
   }
 
+  // Update balance after a transaction or settlement
+  Future<void> updateBalanceAfterTransaction(
+    String otherUserId,
+    double amount,
+  ) async {
+    if (_currentUserId == null) return;
+
+    try {
+      _setLoading(true);
+
+      // Get existing balance between users
+      BalanceModel? existingBalance = await _balanceService
+          .getBalanceBetweenUsers(_currentUserId!, otherUserId);
+
+      if (existingBalance != null) {
+        // Update existing balance
+        double newAmount = existingBalance.amount;
+
+        // If current user is userIdA, add amount; otherwise subtract
+        if (existingBalance.userIdA == _currentUserId) {
+          newAmount += amount;
+        } else {
+          newAmount -= amount;
+        }
+
+        // Update balance
+        final updatedBalance = existingBalance.copyWith(
+          amount: newAmount,
+          lastUpdated: DateTime.now(),
+        );
+
+        await _balanceService.updateBalance(updatedBalance);
+      } else {
+        // Create new balance
+        final newBalance = BalanceModel(
+          balanceId: '', // Will be set by service
+          userIdA: _currentUserId!,
+          userIdB: otherUserId,
+          amount: amount,
+          lastUpdated: DateTime.now(),
+        );
+
+        await _balanceService.createBalance(newBalance);
+      }
+
+      // Refresh balances
+      await fetchBalances();
+    } catch (e) {
+      debugPrint('Error updating balance: $e');
+      _errorMessage = 'Failed to update balance. Please try again.';
+      notifyListeners();
+    } finally {
+      _setLoading(false);
+    }
+  }
+
   // Get formatted total balance string
   String getFormattedTotalBalance() {
     final absBalance = _totalBalance.abs();
     final formattedBalance = '\$${absBalance.toStringAsFixed(2)}';
+
     if (_totalBalance > 0) {
       return '$formattedBalance you are owed';
     } else if (_totalBalance < 0) {
@@ -168,6 +191,12 @@ class BalanceProvider with ChangeNotifier {
     } else {
       return BalanceStatus.zero;
     }
+  }
+
+  // Helper to set loading state and notify listeners
+  void _setLoading(bool loading) {
+    _isLoading = loading;
+    notifyListeners();
   }
 }
 

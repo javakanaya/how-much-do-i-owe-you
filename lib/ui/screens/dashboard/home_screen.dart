@@ -7,7 +7,6 @@ import 'package:intl/intl.dart';
 import 'package:how_much_do_i_owe_you/providers/auth_provider.dart';
 import 'package:how_much_do_i_owe_you/providers/balance_provider.dart';
 import 'package:how_much_do_i_owe_you/config/app_theme.dart';
-import 'package:how_much_do_i_owe_you/ui/screens/transaction/add_transaction_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -79,9 +78,7 @@ class _HomeScreenState extends State<HomeScreen> {
           // Navigate to add transaction screen
           Navigator.push(
             context,
-            MaterialPageRoute(
-              builder: (context) => const AddTransactionScreen(),
-            ),
+            MaterialPageRoute(builder: (context) => Placeholder()),
           ).then((value) {
             // Refresh data when returning from add transaction screen
             if (value == true) {
