@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:how_much_do_i_owe_you/ui/screens/activity/transaction_detail_screen.dart';
 import 'package:how_much_do_i_owe_you/ui/screens/settlement/settlement_creation_screen.dart';
-import 'package:how_much_do_i_owe_you/ui/screens/settlement/settlement_detail_scren.dart';
+import 'package:how_much_do_i_owe_you/ui/screens/settlement/settlement_detail_screen.dart';
 import 'package:how_much_do_i_owe_you/ui/screens/settlement/settlement_history_screen.dart';
 import 'package:how_much_do_i_owe_you/ui/screens/transaction/transaction_creation_screen.dart';
 import 'package:how_much_do_i_owe_you/ui/widgets/custom_navigation_bar.dart';

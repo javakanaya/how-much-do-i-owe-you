@@ -4,14 +4,14 @@ import 'package:how_much_do_i_owe_you/config/app_theme.dart';
 import 'package:how_much_do_i_owe_you/models/transaction_model.dart';
 import 'package:how_much_do_i_owe_you/ui/screens/settlement/widgets/transaction_item.dart';
 
-class SettlementTransactionList extends StatelessWidget {
+class SettlementCreationTransactionList extends StatelessWidget {
   final List<TransactionModel> transactions;
   final Set<String> selectedTransactionIds;
   final bool allTransactionsSelected;
   final Function(String) onToggleTransaction;
   final VoidCallback onToggleAllTransactions;
 
-  const SettlementTransactionList({
+  const SettlementCreationTransactionList({
     super.key,
     required this.transactions,
     required this.selectedTransactionIds,

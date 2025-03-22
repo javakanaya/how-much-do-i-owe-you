@@ -1,12 +1,12 @@
 // ui/screens/settlement/settlement_creation_screen.dart
 import 'package:flutter/material.dart';
-import 'package:how_much_do_i_owe_you/ui/screens/settlement/widgets/settlement_bottom_bart.dart';
+import 'package:how_much_do_i_owe_you/ui/screens/settlement/widgets/settlement_details_bottom_bar.dart';
 import 'package:provider/provider.dart';
 import 'package:how_much_do_i_owe_you/config/app_theme.dart';
 import 'package:how_much_do_i_owe_you/providers/settlement_provider.dart';
-import 'package:how_much_do_i_owe_you/ui/screens/settlement/widgets/settlement_header.dart';
+import 'package:how_much_do_i_owe_you/ui/screens/settlement/widgets/settlement_creation_header.dart';
 import 'package:how_much_do_i_owe_you/ui/screens/settlement/widgets/settlement_empty_state.dart';
-import 'package:how_much_do_i_owe_you/ui/screens/settlement/widgets/settlement_transaction_list.dart';
+import 'package:how_much_do_i_owe_you/ui/screens/settlement/widgets/settlement_creation_transaction_list.dart';
 
 class SettlementCreationScreen extends StatefulWidget {
   final String userId;
@@ -139,7 +139,7 @@ class _SettlementCreationScreenState extends State<SettlementCreationScreen> {
         child: Column(
           children: [
             // Header with total amount
-            SettlementHeader(
+            SettlementCreationHeader(
               userName: widget.userName,
               totalAmount: settlementProvider.totalAmount,
             ),
@@ -159,7 +159,7 @@ class _SettlementCreationScreenState extends State<SettlementCreationScreen> {
                       )
                       : transactions.isEmpty
                       ? const SettlementEmptyState()
-                      : SettlementTransactionList(
+                      : SettlementCreationTransactionList(
                         transactions: transactions,
                         selectedTransactionIds: _selectedTransactionIds,
                         allTransactionsSelected: _allTransactionsSelected,
@@ -169,7 +169,7 @@ class _SettlementCreationScreenState extends State<SettlementCreationScreen> {
             ),
 
             // Bottom action bar
-            SettlementBottomBar(
+            SettlementDetailsBottomBar(
               selectedTransactionIds: _selectedTransactionIds,
               isCreatingSettlement: settlementProvider.isCreatingSettlement,
               onCreateSettlement: _createSettlement,

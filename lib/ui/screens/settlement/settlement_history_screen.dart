@@ -1,6 +1,6 @@
 // ui/screens/settlement/settlement_history_screen.dart
 import 'package:flutter/material.dart';
-import 'package:how_much_do_i_owe_you/ui/screens/settlement/settlement_detail_scren.dart';
+import 'package:how_much_do_i_owe_you/ui/screens/settlement/settlement_detail_screen.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:how_much_do_i_owe_you/config/app_constants.dart';

@@ -4,11 +4,11 @@ import 'package:intl/intl.dart';
 import 'package:how_much_do_i_owe_you/config/app_constants.dart';
 import 'package:how_much_do_i_owe_you/config/app_theme.dart';
 
-class SettlementHeader extends StatelessWidget {
+class SettlementCreationHeader extends StatelessWidget {
   final String userName;
   final double totalAmount;
 
-  const SettlementHeader({
+  const SettlementCreationHeader({
     super.key,
     required this.userName,
     required this.totalAmount,
