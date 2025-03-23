@@ -34,8 +34,8 @@ class SettlementService {
 
       // Update balance between users
       await _balanceService.updateBalanceAfterSettlement(
-        settlement.payerId,
         settlement.receiverId,
+        settlement.payerId,
         settlement.amount,
       );
 
