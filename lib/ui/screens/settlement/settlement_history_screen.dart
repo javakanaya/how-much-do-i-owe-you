@@ -181,7 +181,7 @@ class _SettlementHistoryScreenState extends State<SettlementHistoryScreen> {
                 otherUserName,
                 otherUser?.photoURL,
               );
-            }).toList(),
+            }),
           ],
         );
       },

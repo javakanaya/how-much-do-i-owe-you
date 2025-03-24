@@ -348,8 +348,6 @@ class _TransactionCardState extends State<TransactionCard> {
 // Extension to capitalize first letter of string
 extension StringExtension on String {
   String capitalize() {
-    return this.isNotEmpty
-        ? '${this[0].toUpperCase()}${this.substring(1)}'
-        : '';
+    return isNotEmpty ? '${this[0].toUpperCase()}${substring(1)}' : '';
   }
 }

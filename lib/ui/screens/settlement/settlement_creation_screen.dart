@@ -1,5 +1,4 @@
 // ui/screens/settlement/settlement_creation_screen.dart
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:how_much_do_i_owe_you/providers/auth_provider.dart';
 import 'package:how_much_do_i_owe_you/ui/screens/settlement/widgets/settlement_creation_bottom_bar.dart';

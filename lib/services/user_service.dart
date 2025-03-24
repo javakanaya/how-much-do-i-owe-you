@@ -21,10 +21,7 @@ class UserService {
         final displayNameSnapshot =
             await usersQuery
                 .where('displayName', isGreaterThanOrEqualTo: searchQuery)
-                .where(
-                  'displayName',
-                  isLessThanOrEqualTo: searchQuery + '\uf8ff',
-                )
+                .where('displayName', isLessThanOrEqualTo: '$searchQuery\uf8ff')
                 .limit(10)
                 .get();
 
@@ -32,7 +29,7 @@ class UserService {
         final emailSnapshot =
             await usersQuery
                 .where('email', isGreaterThanOrEqualTo: searchQuery)
-                .where('email', isLessThanOrEqualTo: searchQuery + '\uf8ff')
+                .where('email', isLessThanOrEqualTo: '$searchQuery\uf8ff')
                 .limit(10)
                 .get();
 
