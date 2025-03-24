@@ -49,6 +49,9 @@ lib/
 
 ## Firebase Collection Structure
 
+![image](https://github.com/user-attachments/assets/5b430ded-1c67-4fc1-a93b-3ddc87ac4ad6)
+
+
 ## Business Flow
 
 1. **Transaction Creation**
