@@ -20,7 +20,12 @@ A Flutter mobile application for tracking shared expenses and settling debts bet
 - **Backend**: Firebase (Authentication, Firestore, Storage)
 - **State Management**: Provider
 
-## Screenshots
+## Demo 
+
+
+
+https://github.com/user-attachments/assets/b8691c23-f7ae-42d8-b773-b39631013672
+
 
 ## Project Structure
 
