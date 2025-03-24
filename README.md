@@ -126,15 +126,6 @@ lib/
    flutter run
    ```
 
-## Future Enhancements
-
-- **Group Management**: Create and manage expense groups (e.g., roommates, trip friends)
-- **Currency Support**: Handle multiple currencies and exchange rates
-- **Receipt Scanning**: Scan receipts to add expenses automatically
-- **Expense Categories**: Categorize expenses for better tracking
-- **Payment Integration**: Integrate with payment platforms for in-app settlements
-- **Expense Analytics**: View spending patterns and insights
-
 ## License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
