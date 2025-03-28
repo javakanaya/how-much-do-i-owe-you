@@ -1,8 +1,7 @@
-// models/user_model.dart
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class UserModel {
-  final String userId;
+  final String id;
   final String email;
   final String displayName;
   final String? photoURL;
@@ -11,7 +10,7 @@ class UserModel {
   final int totalPoints;
 
   UserModel({
-    required this.userId,
+    required this.id,
     required this.email,
     required this.displayName,
     this.photoURL,
@@ -20,10 +19,23 @@ class UserModel {
     this.totalPoints = 0,
   });
 
-  // Convert UserModel to Map for Firestore
-  Map<String, dynamic> toMap() {
+  // Converts Firestore data to a UserModel object
+  factory UserModel.fromFirestore(DocumentSnapshot doc) {
+    final data = doc.data() as Map<String, dynamic>;
+    return UserModel(
+      id: doc.id,
+      email: data['email'] ?? '',
+      displayName: data['displayName'] ?? '',
+      photoURL: data['photoURL'],
+      createdAt: (data['createdAt'] as Timestamp).toDate(),
+      lastActive: (data['lastActive'] as Timestamp).toDate(),
+      totalPoints: data['totalPoints'] ?? 0,
+    );
+  }
+
+  // Converts a UserModel object to Firestore data
+  Map<String, dynamic> toFirestore() {
     return {
-      'userId': userId,
       'email': email,
       'displayName': displayName,
       'photoURL': photoURL,
@@ -31,47 +43,5 @@ class UserModel {
       'lastActive': Timestamp.fromDate(lastActive),
       'totalPoints': totalPoints,
     };
-  }
-
-  // Create UserModel from Firestore document
-  factory UserModel.fromFirestore(DocumentSnapshot doc) {
-    Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
-
-    return UserModel(
-      userId: doc.id,
-      email: data['email'] ?? '',
-      displayName: data['displayName'] ?? '',
-      photoURL: data['photoURL'],
-      createdAt:
-          data['createdAt'] != null
-              ? (data['createdAt'] as Timestamp).toDate()
-              : DateTime.now(),
-      lastActive:
-          data['lastActive'] != null
-              ? (data['lastActive'] as Timestamp).toDate()
-              : DateTime.now(),
-      totalPoints: data['totalPoints'] ?? 0,
-    );
-  }
-
-  // Create a copy of UserModel with some fields changed
-  UserModel copyWith({
-    String? userId,
-    String? email,
-    String? displayName,
-    String? photoURL,
-    DateTime? createdAt,
-    DateTime? lastActive,
-    int? totalPoints,
-  }) {
-    return UserModel(
-      userId: userId ?? this.userId,
-      email: email ?? this.email,
-      displayName: displayName ?? this.displayName,
-      photoURL: photoURL ?? this.photoURL,
-      createdAt: createdAt ?? this.createdAt,
-      lastActive: lastActive ?? this.lastActive,
-      totalPoints: totalPoints ?? this.totalPoints,
-    );
   }
 }

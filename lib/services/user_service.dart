@@ -38,12 +38,12 @@ class UserService {
 
         for (var doc in displayNameSnapshot.docs) {
           final user = UserModel.fromFirestore(doc);
-          userMap[user.userId] = user;
+          userMap[user.id] = user;
         }
 
         for (var doc in emailSnapshot.docs) {
           final user = UserModel.fromFirestore(doc);
-          userMap[user.userId] = user;
+          userMap[user.id] = user;
         }
 
         return userMap.values.toList();

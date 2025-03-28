@@ -1,24 +1,26 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:how_much_do_i_owe_you/config/app_theme.dart';
+import 'package:how_much_do_i_owe_you/providers/auth_provider.dart';
 import 'package:how_much_do_i_owe_you/ui/screens/auth/utils/form_validators.dart';
 import 'package:how_much_do_i_owe_you/ui/screens/auth/widgets/headers.dart';
 import 'package:how_much_do_i_owe_you/ui/screens/auth/widgets/password_input_field.dart';
 import 'package:how_much_do_i_owe_you/ui/widgets/custom_button.dart';
 import 'package:how_much_do_i_owe_you/ui/widgets/custom_input_field.dart';
-import 'package:how_much_do_i_owe_you/providers/auth_provider.dart';
-import '../../../config/app_theme.dart';
 
-class LoginScreen extends StatefulWidget {
+class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  ConsumerState<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _LoginScreenState extends ConsumerState<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+
+  bool _isLoading = false;
 
   @override
   void dispose() {
@@ -28,40 +30,38 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future<void> _login() async {
-    if (_formKey.currentState!.validate()) {
-      final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    // clear any existing error
+    ref.read(authErrorProvider.notifier).clearError();
 
-      final success = await authProvider.signIn(
+    if (!_formKey.currentState!.validate()) {
+      return;
+    }
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      final authService = ref.read(authServiceProvider.notifier);
+      await authService.signInWithEmailAndPassword(
         _emailController.text.trim(),
-        _passwordController.text,
+        _passwordController.text.trim(),
       );
-
-      if (success && mounted) {
-        // Navigation is handled by the router based on auth state
-      } else if (mounted) {
-        // Show error message
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(authProvider.errorMessage ?? 'Login failed'),
-            backgroundColor: AppTheme.errorColor,
-          ),
-        );
-      }
+    } catch (e) {
+      ref.read(authErrorProvider.notifier).setError(e.toString());
+      setState(() {
+        _isLoading = false;
+      });
     }
   }
 
-  void _navigateToPasswordReset() {
-    Navigator.pushNamed(context, '/password-reset');
-  }
+  void _navigateToRegister() {}
 
-  void _navigateToRegister() {
-    Navigator.pushNamed(context, '/register');
-  }
+  void _navigateToPasswordReset() {}
 
   @override
   Widget build(BuildContext context) {
-    final authProvider = Provider.of<AuthProvider>(context);
-    final isLoading = authProvider.isLoading;
+    final authError = ref.watch(authErrorProvider);
 
     return Scaffold(
       backgroundColor: AppTheme.backgroundColor,
@@ -79,6 +79,27 @@ class _LoginScreenState extends State<LoginScreen> {
                     // App Logo and Title
                     const LoginHeader(),
                     const SizedBox(height: 48),
+
+                    // Error message if any,
+                    if (authError != null)
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 16.0),
+                        child: Container(
+                          padding: const EdgeInsets.all(8.0),
+                          decoration: BoxDecoration(
+                            color: Colors.red.shade100,
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                          child: Text(
+                            authError,
+                            style: const TextStyle(
+                              color: Colors.red,
+                              fontWeight: FontWeight.w500,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      ),
 
                     // Email Field
                     CustomInputField(
@@ -119,10 +140,8 @@ class _LoginScreenState extends State<LoginScreen> {
                     PrimaryButton(
                       text: 'Login',
                       onPressed: _login,
-                      isLoading: isLoading,
+                      isLoading: _isLoading,
                     ),
-
-                    const SizedBox(height: 64),
 
                     // Register Link
                     Row(

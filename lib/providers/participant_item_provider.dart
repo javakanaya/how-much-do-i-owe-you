@@ -219,7 +219,7 @@ class _ParticipantItemProviderState extends State<ParticipantItemProvider> {
                     );
                     final amount = double.tryParse(numericValue);
                     transactionProvider.updateParticipantAmount(
-                      user.userId,
+                      user.id,
                       amount,
                     );
                   });

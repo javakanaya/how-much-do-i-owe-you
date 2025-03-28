@@ -1,141 +1,103 @@
-// providers/auth_provider.dart
-import 'package:flutter/foundation.dart';
-import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
-import '../models/user_model.dart';
-import '../services/auth_service.dart';
 
-enum AuthStatus { authenticated, unauthenticated, loading }
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-class AuthProvider with ChangeNotifier {
-  final AuthService _authService;
-  AuthStatus _status = AuthStatus.loading;
-  User? _user;
-  UserModel? _userModel;
-  String? _errorMessage;
+part 'auth_provider.g.dart'; //
 
-  AuthProvider(this._authService) {
-    // Listen to auth state changes
-    _authService.authStateChanges.listen((User? user) {
-      _user = user;
-      _status =
-          user != null ? AuthStatus.authenticated : AuthStatus.unauthenticated;
+@riverpod
+Stream<User?> authStateChanges(Ref ref) {
+  return FirebaseAuth.instance.authStateChanges();
+}
 
-      if (user != null) {
-        // Fetch user data from Firestore
-        _fetchUserModel();
-      } else {
-        _userModel = null;
-      }
+@riverpod
+User? currentUser(Ref ref) {
+  return FirebaseAuth.instance.currentUser;
+}
 
-      notifyListeners();
-    });
-  }
+// Provider for auth error state (null means no error)
+@riverpod
+class AuthError extends _$AuthError {
+  @override
+  String? build() => null; // Initially no error
 
-  // Getters
-  AuthStatus get status => _status;
-  User? get user => _user;
-  UserModel? get userModel => _userModel;
-  String? get errorMessage => _errorMessage;
-  bool get isAuthenticated => _status == AuthStatus.authenticated;
-  bool get isLoading => _status == AuthStatus.loading;
+  // Method to update error state
+  void setError(String error) => state = error;
 
-  // Fetch current user data from Firestore
-  Future<void> _fetchUserModel() async {
-    try {
-      _userModel = await _authService.getCurrentUserModel();
-      notifyListeners();
-    } catch (e) {
-      debugPrint('Error fetching user data: $e');
-    }
-  }
+  // Method to clear error
+  void clearError() => state = null;
+}
+
+@riverpod
+class AuthService extends _$AuthService {
+  final _auth = FirebaseAuth.instance;
+
+  @override
+  void build() {}
 
   // Sign in with email and password
-  Future<bool> signIn(String email, String password) async {
+  Future<User?> signInWithEmailAndPassword(
+    String email,
+    String password,
+  ) async {
     try {
-      _status = AuthStatus.loading;
-      _errorMessage = null;
-      notifyListeners();
-
-      await _authService.signInWithEmailAndPassword(email, password);
-      return true;
+      final result = await _auth.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+      ref.read(authErrorProvider.notifier).clearError();
+      return result.user;
     } on FirebaseAuthException catch (e) {
-      _status = AuthStatus.unauthenticated;
-      _setErrorMessage(e);
-      notifyListeners();
-      return false;
+      ref.read(authErrorProvider.notifier).setError(_mapAuthError(e.code));
+      return null;
     }
   }
 
-  // Register with email and password
-  Future<bool> register(
+  // Sign up with email and password
+  Future<User?> createUserWithEmailAndPassword(
     String email,
     String password,
     String displayName,
-    File? profileImage,
   ) async {
     try {
-      _status = AuthStatus.loading;
-      _errorMessage = null;
-      notifyListeners();
-
-      await _authService.registerWithEmailAndPassword(
-        email,
-        password,
-        displayName,
-        profileImage,
+      final result = await _auth.createUserWithEmailAndPassword(
+        email: email,
+        password: password,
       );
-      return true;
-    } on FirebaseAuthException catch (e) {
-      _status = AuthStatus.unauthenticated;
-      _setErrorMessage(e);
-      notifyListeners();
-      return false;
-    }
-  }
 
-  // Reset password
-  Future<bool> resetPassword(String email) async {
-    try {
-      _errorMessage = null;
-      await _authService.resetPassword(email);
-      return true;
+      // Update user profile with display name
+      await result.user?.updateDisplayName(displayName);
+
+      ref.read(authErrorProvider.notifier).clearError();
+      return result.user;
     } on FirebaseAuthException catch (e) {
-      _setErrorMessage(e);
-      notifyListeners();
-      return false;
+      ref.read(authErrorProvider.notifier).setError(_mapAuthError(e.code));
+      return null;
     }
   }
 
   // Sign out
   Future<void> signOut() async {
-    try {
-      await _authService.signOut();
-    } catch (e) {
-      debugPrint('Error signing out: $e');
-    }
+    await _auth.signOut();
   }
 
-  // Set error message based on Firebase exception
-  void _setErrorMessage(FirebaseAuthException e) {
-    switch (e.code) {
+  // Map Firebase error codes to user-friendly messages
+  String _mapAuthError(String errorCode) {
+    switch (errorCode) {
       case 'user-not-found':
-        _errorMessage = 'No user found with this email.';
-        break;
+        return 'No user found with this email.';
       case 'wrong-password':
-        _errorMessage = 'Incorrect password.';
-        break;
+        return 'Incorrect password.';
       case 'email-already-in-use':
-        _errorMessage = 'This email is already registered.';
-        break;
+        return 'An account already exists with this email.';
       case 'weak-password':
-        _errorMessage = 'Password is too weak.';
-        break;
+        return 'Password is too weak.';
       case 'invalid-email':
-        _errorMessage = 'Invalid email address.';
-        break;
+        return 'Invalid email address.';
+      case 'operation-not-allowed':
+        return 'This operation is not allowed.';
       default:
-        _errorMessage = e.message ?? 'An error occurred. Please try again.';
+        return 'An error occurred. Please try again.';
     }
   }
 }

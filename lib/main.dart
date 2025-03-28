@@ -1,93 +1,43 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:how_much_do_i_owe_you/providers/activity_provider.dart';
-import 'package:how_much_do_i_owe_you/providers/balance_provider.dart';
-import 'package:how_much_do_i_owe_you/providers/settlement_provider.dart';
-import 'package:how_much_do_i_owe_you/providers/transaction_provider.dart';
-import 'package:how_much_do_i_owe_you/services/balance_service.dart';
-import 'package:provider/provider.dart';
-import 'firebase_options.dart';
-import 'config/app_theme.dart';
-import 'config/app_constants.dart';
-import 'config/app_router.dart';
-import 'services/auth_service.dart';
-import 'providers/auth_provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:how_much_do_i_owe_you/config/app_constants.dart';
+import 'package:how_much_do_i_owe_you/config/app_theme.dart';
+import 'package:how_much_do_i_owe_you/firebase_options.dart';
+import 'package:how_much_do_i_owe_you/providers/auth_provider.dart';
+import 'package:how_much_do_i_owe_you/ui/screens/auth/login_screen.dart';
+import 'package:how_much_do_i_owe_you/ui/screens/home/home_screen.dart';
+import 'package:how_much_do_i_owe_you/ui/screens/app_error_screen.dart';
+import 'package:how_much_do_i_owe_you/ui/screens/app_loading_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
-  // Set preferred orientations
-  await SystemChrome.setPreferredOrientations([
-    DeviceOrientation.portraitUp,
-    DeviceOrientation.portraitDown,
-  ]);
-
-  // Initialize Firebase
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-
-  runApp(const MyApp());
+  runApp(const ProviderScope(child: MyApp()));
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends ConsumerWidget {
   const MyApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    // Create service instances
-    final authService = AuthService();
-    final balanceService = BalanceService();
+  Widget build(BuildContext context, WidgetRef ref) {
+    final authState = ref.watch(authStateChangesProvider);
 
-    return MultiProvider(
-      providers: [
-        // Register AuthProvider with AuthService
-        ChangeNotifierProvider(create: (_) => AuthProvider(authService)),
-
-        // Register BalanceProvider with BalanceService
-        ChangeNotifierProvider<BalanceProvider>(
-          create: (_) => BalanceProvider(balanceService),
-        ),
-
-        // Register TransactionProvider
-        ChangeNotifierProvider<TransactionProvider>(
-          create: (_) => TransactionProvider(),
-        ),
-
-        // Register ActivityProvider
-        ChangeNotifierProvider<ActivityProvider>(
-          create: (_) => ActivityProvider(),
-        ),
-
-        // Register SettlementProvider
-        ChangeNotifierProvider<SettlementProvider>(
-          create: (_) => SettlementProvider(),
-        ),
-      ],
-      child: Consumer<AuthProvider>(
-        builder: (context, authProvider, _) {
-          // Initialize BalanceProvider with current user ID when authenticated
-          if (authProvider.isAuthenticated && authProvider.user != null) {
-            // We use Future.microtask to avoid calling setState during build
-            Future.microtask(() {
-              final balanceProvider = Provider.of<BalanceProvider>(
-                context,
-                listen: false,
-              );
-              balanceProvider.initialize(authProvider.user!.uid);
-            });
+    return MaterialApp(
+      title: AppConstants.appName,
+      theme: AppTheme.lightTheme,
+      home: authState.when(
+        data: (user) {
+          if (user == null) {
+            return const LoginScreen();
+          } else {
+            return const HomeScreen();
           }
-
-          return MaterialApp(
-            title: AppConstants.appName,
-            debugShowCheckedModeBanner: false,
-            theme: AppTheme.lightTheme,
-            initialRoute:
-                authProvider.isAuthenticated
-                    ? AppConstants.homeRoute
-                    : AppConstants.loginRoute,
-            onGenerateRoute: AppRouter.generateRoute,
-          );
         },
+        loading: () => const AppLoadingScreen(),
+        error:
+            (error, stackTrace) =>
+                AppErrorScreen(message: 'Authentication error: $error'),
       ),
     );
   }

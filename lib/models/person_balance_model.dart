@@ -44,7 +44,7 @@ class PersonBalance {
     // Get the other user's ID
     final String otherUserId = balanceModel.getOtherUserId(currentUserId);
     // Make sure we're getting the correct person
-    if (userModel.userId != otherUserId) {
+    if (userModel.id != otherUserId) {
       throw ArgumentError(
         'User model does not match the expected user ID in the balance model',
       );
@@ -56,7 +56,7 @@ class PersonBalance {
     // Determine if balance is positive (they owe us) or negative (we owe them)
     final bool isPositive = balanceAmount > 0; // If negative, they owe us
     return PersonBalance(
-      userId: userModel.userId,
+      userId: userModel.id,
       name: userModel.displayName,
       initials: _getInitials(userModel.displayName),
       avatarColor: _getAvatarColor(userModel.displayName),

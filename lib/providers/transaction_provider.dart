@@ -87,11 +87,11 @@ class TransactionProvider with ChangeNotifier {
   void updateParticipants(List<UserModel> selectedUsers) {
     // Create a map of current participants for easy lookup
     final currentParticipants = Map.fromEntries(
-      _participants.map((p) => MapEntry(p.user.userId, p)),
+      _participants.map((p) => MapEntry(p.user.id, p)),
     );
 
     // Create a set of selected user IDs
-    selectedUsers.map((user) => user.userId).toSet();
+    selectedUsers.map((user) => user.id).toSet();
 
     // Start with a new list but keep the payer
     final payer = _participants.firstWhere(
@@ -110,13 +110,13 @@ class TransactionProvider with ChangeNotifier {
     // Add/update participants based on selection
     for (final user in selectedUsers) {
       // Skip the payer (already added)
-      if (user.userId == payer.user.userId) {
+      if (user.id == payer.user.id) {
         continue;
       }
 
       // If user was already a participant, preserve their amount
-      if (currentParticipants.containsKey(user.userId)) {
-        newParticipants.add(currentParticipants[user.userId]!);
+      if (currentParticipants.containsKey(user.id)) {
+        newParticipants.add(currentParticipants[user.id]!);
       } else {
         // Add as new participant
         newParticipants.add(
@@ -131,7 +131,7 @@ class TransactionProvider with ChangeNotifier {
 
   // Update a participant's amount
   void updateParticipantAmount(String userId, double? amount) {
-    final index = _participants.indexWhere((p) => p.user.userId == userId);
+    final index = _participants.indexWhere((p) => p.user.id == userId);
 
     if (index != -1) {
       _participants[index] = _participants[index].copyWith(amount: amount);
@@ -142,11 +142,11 @@ class TransactionProvider with ChangeNotifier {
   // Remove a participant
   void removeParticipant(String userId) {
     // Don't allow removing the payer
-    if (_participants.any((p) => p.user.userId == userId && p.isPayer)) {
+    if (_participants.any((p) => p.user.id == userId && p.isPayer)) {
       return;
     }
 
-    _participants.removeWhere((p) => p.user.userId == userId);
+    _participants.removeWhere((p) => p.user.id == userId);
     notifyListeners();
   }
 
@@ -221,12 +221,12 @@ class TransactionProvider with ChangeNotifier {
       await _transactionService.createTransaction(
         description: _description.trim(),
         amount: _amount,
-        payerId: payerEntry.user.userId,
+        payerId: payerEntry.user.id,
         participants:
             _participants
                 .map(
                   (p) => ParticipantModel(
-                    userId: p.user.userId,
+                    userId: p.user.id,
                     transactionId: '', // Will be set by the transaction service
                     owedAmount: p.amount ?? 0.0,
                     isPayer: p.isPayer,
