@@ -7,8 +7,9 @@ import 'package:how_much_do_i_owe_you/firebase_options.dart';
 import 'package:how_much_do_i_owe_you/providers/auth_provider.dart';
 import 'package:how_much_do_i_owe_you/ui/screens/app_error_screen.dart';
 import 'package:how_much_do_i_owe_you/ui/screens/app_loading_screen.dart';
+import 'package:how_much_do_i_owe_you/ui/screens/auth/login_screen.dart';
 import 'package:how_much_do_i_owe_you/ui/screens/auth/register_screen.dart';
-import 'package:how_much_do_i_owe_you/ui/widgets/auth_wrapper.dart';
+import 'package:how_much_do_i_owe_you/ui/screens/home/home_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -39,7 +40,13 @@ class MyApp extends ConsumerWidget {
 
       // Using a single main route to an AuthWrapper that handles navigation
       home: authState.when(
-        data: (_) => const AuthWrapper(), // Let AuthWrapper handle auth state
+        data: (user) {
+          if (user != null) {
+            return const HomeScreen();
+          } else {
+            return const LoginScreen();
+          }
+        }, // Let AuthWrapper handle auth state
         loading: () => const AppLoadingScreen(),
         error:
             (error, stackTrace) =>
