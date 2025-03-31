@@ -4,9 +4,7 @@ class FormValidators {
     if (value == null || value.isEmpty) {
       return 'Please enter your email';
     }
-    if (!RegExp(
-      r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
-    ).hasMatch(value)) {
+    if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) {
       return 'Please enter a valid email';
     }
     return null;
@@ -24,10 +22,7 @@ class FormValidators {
   }
 
   // Confirm password validation
-  static String? validateConfirmPassword(
-    String? value,
-    String password,
-  ) {
+  static String? validateConfirmPassword(String? value, String password) {
     if (value == null || value.isEmpty) {
       return 'Please confirm your password';
     }
@@ -38,10 +33,7 @@ class FormValidators {
   }
 
   // Required field validation
-  static String? validateRequired(
-    String? value, {
-    String? fieldName,
-  }) {
+  static String? validateRequired(String? value, {String? fieldName}) {
     if (value == null || value.trim().isEmpty) {
       return 'Please enter ${fieldName ?? 'this field'}';
     }
