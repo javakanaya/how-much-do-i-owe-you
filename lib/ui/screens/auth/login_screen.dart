@@ -3,13 +3,16 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:how_much_do_i_owe_you/config/app_theme.dart';
 import 'package:how_much_do_i_owe_you/providers/auth_provider.dart';
 import 'package:how_much_do_i_owe_you/ui/screens/auth/utils/form_validators.dart';
+import 'package:how_much_do_i_owe_you/ui/screens/auth/widgets/auth_error_display.dart';
 import 'package:how_much_do_i_owe_you/ui/screens/auth/widgets/headers.dart';
 import 'package:how_much_do_i_owe_you/ui/screens/auth/widgets/password_input_field.dart';
 import 'package:how_much_do_i_owe_you/ui/widgets/custom_button.dart';
 import 'package:how_much_do_i_owe_you/ui/widgets/custom_input_field.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
-  const LoginScreen({super.key});
+  final VoidCallback onNavigateToRegister;
+
+  const LoginScreen({super.key, required this.onNavigateToRegister});
 
   @override
   ConsumerState<LoginScreen> createState() => _LoginScreenState();
@@ -42,27 +45,33 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     });
 
     try {
-      final authService = ref.read(authServiceProvider.notifier);
-      await authService.signInWithEmailAndPassword(
-        _emailController.text.trim(),
-        _passwordController.text.trim(),
-      );
+      await ref
+          .read(authServiceProvider.notifier)
+          .signInWithEmailAndPassword(
+            _emailController.text.trim(),
+            _passwordController.text.trim(),
+          );
+      // Don't navigate here - let the AuthWrapper handle navigation
+      // based on the auth state change
     } catch (e) {
-      ref.read(authErrorProvider.notifier).setError(e.toString());
-      setState(() {
-        _isLoading = false;
-      });
+      // Error is already handled by the AuthService
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
     }
   }
 
-  void _navigateToRegister() {}
+  void _navigateToRegister() {
+    widget.onNavigateToRegister();
+  }
 
   void _navigateToPasswordReset() {}
 
   @override
   Widget build(BuildContext context) {
-    final authError = ref.watch(authErrorProvider);
-
     return Scaffold(
       backgroundColor: AppTheme.backgroundColor,
       body: SafeArea(
@@ -81,25 +90,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     const SizedBox(height: 48),
 
                     // Error message if any,
-                    if (authError != null)
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 16.0),
-                        child: Container(
-                          padding: const EdgeInsets.all(8.0),
-                          decoration: BoxDecoration(
-                            color: Colors.red.shade100,
-                            borderRadius: BorderRadius.circular(4),
-                          ),
-                          child: Text(
-                            authError,
-                            style: const TextStyle(
-                              color: Colors.red,
-                              fontWeight: FontWeight.w500,
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                        ),
-                      ),
+                    AuthErrorDisplay(),
 
                     // Email Field
                     CustomInputField(
@@ -151,6 +142,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           "Don't have an account? ",
                           style: TextStyle(color: AppTheme.textSecondaryColor),
                         ),
+
+                        const SizedBox(height: 32),
                         GestureDetector(
                           onTap: _navigateToRegister,
                           child: Text(

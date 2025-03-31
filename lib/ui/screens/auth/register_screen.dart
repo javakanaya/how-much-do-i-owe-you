@@ -5,7 +5,9 @@ import 'package:how_much_do_i_owe_you/providers/auth_provider.dart';
 import 'package:how_much_do_i_owe_you/ui/screens/auth/widgets/registration_form.dart';
 
 class RegisterScreen extends ConsumerStatefulWidget {
-  const RegisterScreen({super.key});
+  final VoidCallback onNavigateToLogin;
+
+  const RegisterScreen({super.key, required this.onNavigateToLogin});
 
   @override
   ConsumerState<RegisterScreen> createState() => _RegisterScreenState();
@@ -22,15 +24,20 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
       _isLoading = true;
     });
 
-    // Attempt to register
-    await ref
-        .read(authServiceProvider.notifier)
-        .createUserWithEmailAndPassword(email, password, name);
-
-    // Reset loading state, regardless of success or failure
-    setState(() {
-      _isLoading = false;
-    });
+    try {
+      await ref
+          .read(authServiceProvider.notifier)
+          .createUserWithEmailAndPassword(email, password, name);
+      // Don't navigate here - let the AuthWrapper handle navigation
+    } catch (e) {
+      // Error is already handled by the AuthService
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
   }
 
   @override
@@ -38,7 +45,10 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     return Scaffold(
       backgroundColor: AppTheme.backgroundColor,
       appBar: AppBar(
-        iconTheme: const IconThemeData(color: AppTheme.textPrimaryColor),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: widget.onNavigateToLogin,
+        ),
         title: const Text(
           'Create Account',
           style: TextStyle(color: Color(0xFF1A1A1A), fontWeight: FontWeight.bold),

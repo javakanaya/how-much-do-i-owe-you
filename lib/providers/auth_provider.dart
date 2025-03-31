@@ -36,10 +36,7 @@ class AuthService extends _$AuthService {
   void build() {}
 
   // Sign in with email and password
-  Future<User?> signInWithEmailAndPassword(
-    String email,
-    String password,
-  ) async {
+  Future<User?> signInWithEmailAndPassword(String email, String password) async {
     try {
       final result = await _auth.signInWithEmailAndPassword(
         email: email,

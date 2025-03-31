@@ -2,18 +2,23 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:how_much_do_i_owe_you/providers/auth_provider.dart';
 import 'package:how_much_do_i_owe_you/providers/user_provider.dart';
-import 'package:how_much_do_i_owe_you/ui/screens/auth/login_screen.dart';
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
 
   Future<void> _signOut(BuildContext context, WidgetRef ref) async {
-    await ref.read(authServiceProvider.notifier).signOut();
-    if (context.mounted) {
-      Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute(builder: (context) => const LoginScreen()),
-        (route) => false,
-      );
+    try {
+      // Show a loading indicator or disable the button while signing out
+      await ref.read(authServiceProvider.notifier).signOut();
+      // No need to navigate - AuthWrapper will handle it
+    } catch (e) {
+      // Check if the widget is still mounted before using BuildContext
+      if (context.mounted) {
+        // Show error using snackbar or dialog
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error signing out: $e')));
+      }
     }
   }
 
@@ -66,9 +71,7 @@ class HomeScreen extends ConsumerWidget {
           );
         },
         loading: () => const Center(child: CircularProgressIndicator()),
-        error:
-            (error, stack) =>
-                Center(child: Text('Error loading user data: $error')),
+        error: (error, stack) => Center(child: Text('Error loading user data: $error')),
       ),
     );
   }
