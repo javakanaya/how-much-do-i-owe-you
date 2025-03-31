@@ -7,6 +7,7 @@ import 'package:how_much_do_i_owe_you/firebase_options.dart';
 import 'package:how_much_do_i_owe_you/providers/auth_provider.dart';
 import 'package:how_much_do_i_owe_you/ui/screens/app_error_screen.dart';
 import 'package:how_much_do_i_owe_you/ui/screens/app_loading_screen.dart';
+import 'package:how_much_do_i_owe_you/ui/screens/auth/register_screen.dart';
 import 'package:how_much_do_i_owe_you/ui/widgets/auth_wrapper.dart';
 
 void main() async {
@@ -47,7 +48,7 @@ class MyApp extends ConsumerWidget {
 
       // Define additional routes for non-auth dependent screens
       routes: {
-        // '/settings': (context) => const SettingsScreen(),
+        '/register': (context) => const RegisterScreen(),
         // '/about': (context) => const AboutScreen(),
         // Other routes that don't depend on auth state
       },

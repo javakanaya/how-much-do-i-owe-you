@@ -5,9 +5,7 @@ import 'package:how_much_do_i_owe_you/providers/auth_provider.dart';
 import 'package:how_much_do_i_owe_you/ui/screens/auth/widgets/registration_form.dart';
 
 class RegisterScreen extends ConsumerStatefulWidget {
-  final VoidCallback onNavigateToLogin;
-
-  const RegisterScreen({super.key, required this.onNavigateToLogin});
+  const RegisterScreen({super.key});
 
   @override
   ConsumerState<RegisterScreen> createState() => _RegisterScreenState();
@@ -25,10 +23,14 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     });
 
     try {
-      await ref
+      // Attempt to register
+      final user = await ref
           .read(authServiceProvider.notifier)
           .createUserWithEmailAndPassword(email, password, name);
-      // Don't navigate here - let the AuthWrapper handle navigation
+      // If registration is successful, pop back to allow AuthWrapper to handle navigation
+      if (user != null && mounted) {
+        Navigator.of(context).pop(); // Remove RegisterScreen from stack
+      }
     } catch (e) {
       // Error is already handled by the AuthService
     } finally {
@@ -45,10 +47,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     return Scaffold(
       backgroundColor: AppTheme.backgroundColor,
       appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: widget.onNavigateToLogin,
-        ),
+        iconTheme: const IconThemeData(color: AppTheme.textPrimaryColor),
         title: const Text(
           'Create Account',
           style: TextStyle(color: Color(0xFF1A1A1A), fontWeight: FontWeight.bold),

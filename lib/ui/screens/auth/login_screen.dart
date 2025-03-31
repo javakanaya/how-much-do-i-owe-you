@@ -10,9 +10,7 @@ import 'package:how_much_do_i_owe_you/ui/widgets/custom_button.dart';
 import 'package:how_much_do_i_owe_you/ui/widgets/custom_input_field.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
-  final VoidCallback onNavigateToRegister;
-
-  const LoginScreen({super.key, required this.onNavigateToRegister});
+  const LoginScreen({super.key});
 
   @override
   ConsumerState<LoginScreen> createState() => _LoginScreenState();
@@ -65,7 +63,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   }
 
   void _navigateToRegister() {
-    widget.onNavigateToRegister();
+    Navigator.of(context).pushNamed('/register');
   }
 
   void _navigateToPasswordReset() {}
