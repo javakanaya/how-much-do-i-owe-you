@@ -15,9 +15,6 @@ class AuthService {
   // Get current user
   User? get currentUser => _auth.currentUser;
 
-  // Stream of auth state changes
-  Stream<User?> get authStateChanges => _auth.authStateChanges();
-
   // In your getCurrentUserModel method
   Future<UserModel?> getCurrentUserModel() async {
     if (currentUser == null) return null;
@@ -40,10 +37,7 @@ class AuthService {
   }
 
   // Sign in with email and password
-  Future<User?> signInWithEmailAndPassword(
-    String email,
-    String password,
-  ) async {
+  Future<User?> signInWithEmailAndPassword(String email, String password) async {
     try {
       UserCredential result = await _auth.signInWithEmailAndPassword(
         email: email,
@@ -129,18 +123,15 @@ class AuthService {
     String? photoURL,
   ) async {
     try {
-      await _firestore
-          .collection(AppConstants.usersCollection)
-          .doc(userId)
-          .set({
-            'userId': userId,
-            'email': email,
-            'displayName': displayName,
-            'photoURL': photoURL,
-            'createdAt': FieldValue.serverTimestamp(),
-            'lastActive': FieldValue.serverTimestamp(),
-            'totalPoints': 0,
-          });
+      await _firestore.collection(AppConstants.usersCollection).doc(userId).set({
+        'userId': userId,
+        'email': email,
+        'displayName': displayName,
+        'photoURL': photoURL,
+        'createdAt': FieldValue.serverTimestamp(),
+        'lastActive': FieldValue.serverTimestamp(),
+        'totalPoints': 0,
+      });
     } catch (e) {
       debugPrint('Error creating user document: $e');
       rethrow;

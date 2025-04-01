@@ -32,24 +32,6 @@ class CurrentUserData extends _$CurrentUserData {
       // Try to get existing user
       UserModel? user = await repository.getUserById(userId);
 
-      // If user doesn't exist in Firestore yet, create it
-      if (user == null) {
-        final authUser = ref.read(currentUserProvider);
-        if (authUser == null) return null;
-
-        user = UserModel(
-          id: authUser.uid,
-          email: authUser.email ?? '',
-          displayName: authUser.displayName ?? 'User',
-          photoURL: authUser.photoURL,
-          createdAt: DateTime.now(),
-          lastActive: DateTime.now(),
-          totalPoints: 0,
-        );
-
-        await repository.createUser(user);
-      }
-
       return user;
     } catch (e) {
       return null;

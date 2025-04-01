@@ -42,27 +42,26 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       _isLoading = true;
     });
 
-    try {
-      await ref
-          .read(authServiceProvider.notifier)
-          .signInWithEmailAndPassword(
-            _emailController.text.trim(),
-            _passwordController.text.trim(),
-          );
-      // Don't navigate here - let the AuthWrapper handle navigation
-      // based on the auth state change
-    } catch (e) {
-      // Error is already handled by the AuthService
-    } finally {
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
-      }
+    await ref
+        .read(authServiceProvider.notifier)
+        .signInWithEmailAndPassword(
+          _emailController.text.trim(),
+          _passwordController.text.trim(),
+        );
+
+    // Don't navigate here - let the AuthWrapper handle navigation
+    // based on the auth state change
+    // Error is already handled by the AuthService
+
+    if (ref.read(authErrorProvider) != null) {
+      setState(() {
+        _isLoading = false;
+      });
     }
   }
 
   void _navigateToRegister() {
+    ref.read(authErrorProvider.notifier).clearError();
     Navigator.of(context).pushNamed('/register');
   }
 

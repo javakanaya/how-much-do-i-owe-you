@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:how_much_do_i_owe_you/config/app_theme.dart';
 import 'package:how_much_do_i_owe_you/providers/auth_provider.dart';
 import 'package:how_much_do_i_owe_you/ui/screens/auth/widgets/registration_form.dart';
+import 'package:provider/provider.dart';
 
 class RegisterScreen extends ConsumerStatefulWidget {
   const RegisterScreen({super.key});
@@ -14,6 +15,12 @@ class RegisterScreen extends ConsumerStatefulWidget {
 class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   bool _isLoading = false;
 
+  @override
+  void dispose() {
+    ref.read(authErrorProvider.notifier).clearError();
+    super.dispose();
+  }
+
   Future<void> _register(String email, String password, String name) async {
     ref.read(authErrorProvider.notifier).clearError();
 
@@ -22,23 +29,20 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
       _isLoading = true;
     });
 
-    try {
-      // Attempt to register
-      final user = await ref
-          .read(authServiceProvider.notifier)
-          .createUserWithEmailAndPassword(email, password, name);
-      // If registration is successful, pop back to allow AuthWrapper to handle navigation
-      if (user != null && mounted) {
-        Navigator.of(context).pop(); // Remove RegisterScreen from stack
-      }
-    } catch (e) {
-      // Error is already handled by the AuthService
-    } finally {
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
-      }
+    // Attempt to register
+    final user = await ref
+        .read(authServiceProvider.notifier)
+        .createUserWithEmailAndPassword(email, password, name);
+
+    if (ref.read(authErrorProvider) != null) {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+
+    // If registration is successful, pop back to allow AuthWrapper to handle navigation
+    if (user != null && mounted) {
+      Navigator.of(context).pop(); // Remove RegisterScreen from stack
     }
   }
 

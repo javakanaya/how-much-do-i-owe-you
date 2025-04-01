@@ -1,6 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:how_much_do_i_owe_you/models/index.dart';
+import 'package:how_much_do_i_owe_you/providers/user_provider.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'auth_provider.g.dart'; //
@@ -45,6 +47,7 @@ class AuthService extends _$AuthService {
       ref.read(authErrorProvider.notifier).clearError();
       return result.user;
     } on FirebaseAuthException catch (e) {
+      print(e);
       ref.read(authErrorProvider.notifier).setError(_mapAuthError(e.code));
       return null;
     }
@@ -62,8 +65,21 @@ class AuthService extends _$AuthService {
         password: password,
       );
 
-      // Update user profile with display name
-      await result.user?.updateDisplayName(displayName);
+      if (result.user == null) {
+        return null;
+      }
+
+      final user = UserModel(
+        id: result.user!.uid,
+        email: email,
+        displayName: displayName,
+        photoURL: '',
+        createdAt: DateTime.now(),
+        lastActive: DateTime.now(),
+        totalPoints: 0,
+      );
+
+      await ref.read(userRepositoryProvider).createUser(user);
 
       ref.read(authErrorProvider.notifier).clearError();
       return result.user;
@@ -91,6 +107,8 @@ class AuthService extends _$AuthService {
         return 'Password is too weak.';
       case 'invalid-email':
         return 'Invalid email address.';
+      case 'invalid-credential':
+        return 'Incorrect email and/or password.';
       case 'operation-not-allowed':
         return 'This operation is not allowed.';
       default:
