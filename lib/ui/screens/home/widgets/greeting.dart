@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:how_much_do_i_owe_you/models/user_model.dart';
 import 'package:how_much_do_i_owe_you/config/app_theme.dart';
 
-class GreetingWidget extends StatelessWidget {
-  final UserModel? user;
+class Greeting extends StatelessWidget {
+  final UserModel user;
 
-  const GreetingWidget({super.key, required this.user});
+  const Greeting({super.key, required this.user});
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +18,7 @@ class GreetingWidget extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Hi, ${user?.displayName ?? 'there'}',
+              'Hi, ${user.displayName}',
               style: const TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
@@ -27,10 +27,7 @@ class GreetingWidget extends StatelessWidget {
             ),
             const Text(
               'Let\'s manage expenses together!',
-              style: TextStyle(
-                fontSize: 12,
-                color: AppTheme.textSecondaryColor,
-              ),
+              style: TextStyle(fontSize: 12, color: AppTheme.textSecondaryColor),
             ),
           ],
         ),
@@ -55,7 +52,7 @@ class GreetingWidget extends StatelessWidget {
               ),
               const SizedBox(width: 5),
               Text(
-                '${user?.totalPoints ?? 350} pts',
+                '${user.totalPoints} pts',
                 style: const TextStyle(fontSize: 11, color: Color(0xFF7D6E00)),
               ),
             ],

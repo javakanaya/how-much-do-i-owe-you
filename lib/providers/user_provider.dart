@@ -66,3 +66,87 @@ class CurrentUserData extends _$CurrentUserData {
     state = AsyncValue.data(updatedUser);
   }
 }
+
+// Add this new provider to fetch any user by ID
+@riverpod
+Future<UserModel?> userData(Ref ref, String userId) async {
+  final repository = ref.read(userRepositoryProvider);
+
+  try {
+    return await repository.getUserById(userId);
+  } catch (e) {
+    // Handle error or return null
+    return null;
+  }
+}
+
+// For development/testing - returns dummy user data
+@riverpod
+Future<UserModel?> dummyUserData(DummyUserDataRef ref, String userId) async {
+  // Simulate network delay
+  await Future.delayed(const Duration(milliseconds: 500));
+
+  // Return dummy user data based on userId
+  switch (userId) {
+    case 'user1':
+      return UserModel(
+        id: 'user1',
+        email: 'user1@example.com',
+        displayName: 'John Doe',
+        photoURL: null,
+        createdAt: DateTime.now().subtract(const Duration(days: 30)),
+        lastActive: DateTime.now().subtract(const Duration(hours: 2)),
+        totalPoints: 120,
+      );
+    case 'user2':
+      return UserModel(
+        id: 'user2',
+        email: 'user2@example.com',
+        displayName: 'Jane Smith',
+        photoURL: null,
+        createdAt: DateTime.now().subtract(const Duration(days: 45)),
+        lastActive: DateTime.now().subtract(const Duration(days: 1)),
+        totalPoints: 85,
+      );
+    case 'user3':
+      return UserModel(
+        id: 'user3',
+        email: 'user3@example.com',
+        displayName: 'Michael Johnson',
+        photoURL: null,
+        createdAt: DateTime.now().subtract(const Duration(days: 60)),
+        lastActive: DateTime.now().subtract(const Duration(minutes: 30)),
+        totalPoints: 210,
+      );
+    case 'user4':
+      return UserModel(
+        id: 'user4',
+        email: 'user4@example.com',
+        displayName: 'Emily Brown',
+        photoURL: null,
+        createdAt: DateTime.now().subtract(const Duration(days: 15)),
+        lastActive: DateTime.now().subtract(const Duration(hours: 5)),
+        totalPoints: 45,
+      );
+    case 'user5':
+      return UserModel(
+        id: 'user5',
+        email: 'user5@example.com',
+        displayName: 'David Wilson',
+        photoURL: null,
+        createdAt: DateTime.now().subtract(const Duration(days: 90)),
+        lastActive: DateTime.now().subtract(const Duration(days: 3)),
+        totalPoints: 150,
+      );
+    default:
+      return UserModel(
+        id: userId,
+        email: '$userId@example.com',
+        displayName: 'User $userId',
+        photoURL: null,
+        createdAt: DateTime.now().subtract(const Duration(days: 10)),
+        lastActive: DateTime.now(),
+        totalPoints: 0,
+      );
+  }
+}

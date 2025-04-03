@@ -41,7 +41,7 @@ class UserInfo extends StatelessWidget {
               value: DateFormat('dd MMMM yyyy').format(user.createdAt),
             ),
 
-            const Divider(height: 24),
+            const Divider(height: 24, color: AppTheme.dividerColor),
 
             InfoRow(
               icon: Icons.access_time_outlined,

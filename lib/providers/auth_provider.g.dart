@@ -57,7 +57,7 @@ final authErrorProvider =
     );
 
 typedef _$AuthError = AutoDisposeNotifier<String?>;
-String _$authServiceHash() => r'9a60cec24b254d86da409df85ea66a9b611d4265';
+String _$authServiceHash() => r'd0f3be14d45f5e2f8bb554ef637ffae123bd7a58';
 
 /// See also [AuthService].
 @ProviderFor(AuthService)

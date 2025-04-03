@@ -1,3 +1,5 @@
+import 'package:intl/intl.dart';
+
 class AppConstants {
   // App info
   static const String appName = 'How Much Do I Owe You?';
@@ -38,23 +40,31 @@ class AppConstants {
   static const String currencyLocale = 'id_ID';
   static const int currencyDecimalDigits = 0;
 
+  static NumberFormat rupiahFormat = NumberFormat.currency(
+    locale: AppConstants.currencyLocale,
+    symbol: AppConstants.currencySymbol,
+    decimalDigits: AppConstants.currencyDecimalDigits,
+  );
+
   // App settings
   static const double defaultPadding = 16.0;
   static const double cardBorderRadius = 15.0;
   static const Duration animationDuration = Duration(milliseconds: 300);
 
   // Error messages
-  static const String defaultErrorMessage =
-      'Something went wrong. Please try again.';
+  static const String defaultErrorMessage = 'Something went wrong. Please try again.';
   static const String networkErrorMessage =
       'Network error. Please check your connection.';
   static const String authErrorMessage =
       'Authentication failed. Please check your credentials.';
 
   // Success messages
-  static const String transactionAddedMessage =
-      'Transaction added successfully!';
-  static const String settlementCompletedMessage =
-      'Settlement completed successfully!';
+  static const String transactionAddedMessage = 'Transaction added successfully!';
+  static const String settlementCompletedMessage = 'Settlement completed successfully!';
   static const String profileUpdatedMessage = 'Profile updated successfully!';
+
+  // Transaction statuses
+  static const String statusPending = 'pending';
+  static const String statusSettled = 'settled';
+  static const String statusCancelled = 'cancelled';
 }
