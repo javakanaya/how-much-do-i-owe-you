@@ -9,7 +9,7 @@ import 'package:how_much_do_i_owe_you/ui/screens/app_error_screen.dart';
 import 'package:how_much_do_i_owe_you/ui/screens/app_loading_screen.dart';
 import 'package:how_much_do_i_owe_you/ui/screens/auth/login_screen.dart';
 import 'package:how_much_do_i_owe_you/ui/screens/auth/register_screen.dart';
-import 'package:how_much_do_i_owe_you/ui/screens/home/home_screen.dart';
+import 'package:how_much_do_i_owe_you/ui/widgets/app_navigation_wrapper.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -42,7 +42,7 @@ class MyApp extends ConsumerWidget {
       home: authState.when(
         data: (user) {
           if (user != null) {
-            return const HomeScreen();
+            return const AppNavigationWrapper();
           } else {
             return const LoginScreen();
           }
