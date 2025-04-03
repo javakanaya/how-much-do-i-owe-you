@@ -68,60 +68,51 @@ class ProfileScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final userDataAsync = ref.watch(currentUserDataProvider);
 
-    return Column(
-      children: [
-        // App Bar Equivalent
-        AppBar(title: const Text('Profile')),
+    return SafeArea(
+      child: userDataAsync.when(
+        data: (userData) {
+          if (userData == null) {
+            // Handle the case when user data is null
+            // You can show a message or a placeholder widget
+            return const Center(child: Text('User data not found'));
+          }
 
-        // Body Content
-        Expanded(
-          child: userDataAsync.when(
-            data: (userData) {
-              if (userData == null) {
-                // Handle the case when user data is null
-                // You can show a message or a placeholder widget
-                return const Center(child: Text('User data not found'));
-              }
-
-              // profile screen content
-              return SingleChildScrollView(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  children: [
-                    ProfileHeader(
-                      profileImageUrl: userData.photoURL,
-                      userName: userData.displayName,
-                    ),
-
-                    const SizedBox(height: 32),
-
-                    UserInfo(user: userData),
-
-                    const SizedBox(height: 32),
-
-                    PointsStats(points: userData.totalPoints),
-
-                    const SizedBox(height: 32),
-
-                    PrimaryButton(
-                      text: "Logout",
-                      onPressed: () => _confirmSignOut(context, ref),
-                    ),
-
-                    const SizedBox(height: 32),
-
-                    AppVersion(),
-                  ],
+          // profile screen content
+          return SingleChildScrollView(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              children: [
+                ProfileHeader(
+                  profileImageUrl: userData.photoURL,
+                  userName: userData.displayName,
                 ),
-              );
-            },
 
-            loading: () => const Center(child: CircularProgressIndicator()),
-            error:
-                (error, stack) => Center(child: Text('Error loading user data: $error')),
-          ),
-        ),
-      ],
+                const SizedBox(height: 32),
+
+                UserInfo(user: userData),
+
+                const SizedBox(height: 32),
+
+                PointsStats(points: userData.totalPoints),
+
+                const SizedBox(height: 32),
+
+                PrimaryButton(
+                  text: "Logout",
+                  onPressed: () => _confirmSignOut(context, ref),
+                ),
+
+                const SizedBox(height: 32),
+
+                AppVersion(),
+              ],
+            ),
+          );
+        },
+
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (error, stack) => Center(child: Text('Error loading user data: $error')),
+      ),
     );
   }
 }
