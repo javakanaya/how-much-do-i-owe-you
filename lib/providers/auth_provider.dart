@@ -73,7 +73,7 @@ class AuthService extends _$AuthService {
         id: result.user!.uid,
         email: email,
         displayName: displayName,
-        photoURL: '',
+        photoURL: null,
         createdAt: DateTime.now(),
         lastActive: DateTime.now(),
         totalPoints: 0,
