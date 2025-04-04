@@ -13,47 +13,32 @@ class Greeting extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        // User greeting
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'Hi, ${user.displayName}',
-              style: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: AppTheme.textPrimaryColor,
-              ),
-            ),
-            const Text(
-              'Let\'s manage expenses together!',
-              style: TextStyle(fontSize: 12, color: AppTheme.textSecondaryColor),
-            ),
+            Text('Hi, ${user.displayName}', style: AppTheme.h2Style),
+            const SizedBox(height: 4),
+            Text('Let\'s manage expenses together!', style: AppTheme.bodySecondaryStyle),
           ],
         ),
-
-        // Points badge
         Container(
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
           decoration: BoxDecoration(
-            color: const Color(0xFFFFF8E0),
-            borderRadius: BorderRadius.circular(11),
-            border: Border.all(color: const Color(0xFFFFD700)),
+            color: AppTheme.warningColor.withAlpha(51),
+            borderRadius: BorderRadius.circular(16),
           ),
           child: Row(
             children: [
-              Container(
-                width: 14,
-                height: 14,
-                decoration: const BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: Color(0xFFFFD700),
-                ),
-              ),
-              const SizedBox(width: 5),
+              const Icon(Icons.star, color: AppTheme.warningColor, size: 18),
+              const SizedBox(width: 4),
               Text(
                 '${user.totalPoints} pts',
-                style: const TextStyle(fontSize: 11, color: Color(0xFF7D6E00)),
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                  color: AppTheme.warningColor,
+                  fontFamily: AppTheme.fontFamily,
+                ),
               ),
             ],
           ),

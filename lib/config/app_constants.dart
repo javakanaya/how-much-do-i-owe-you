@@ -46,11 +46,6 @@ class AppConstants {
     decimalDigits: AppConstants.currencyDecimalDigits,
   );
 
-  // App settings
-  static const double defaultPadding = 16.0;
-  static const double cardBorderRadius = 15.0;
-  static const Duration animationDuration = Duration(milliseconds: 300);
-
   // Error messages
   static const String defaultErrorMessage = 'Something went wrong. Please try again.';
   static const String networkErrorMessage =

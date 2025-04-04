@@ -20,14 +20,7 @@ class UserInfo extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            const Text(
-              'Account Information',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: AppTheme.textPrimaryColor,
-              ),
-            ),
+            const Text('Account Information', style: AppTheme.h2Style),
 
             const SizedBox(height: 16),
 

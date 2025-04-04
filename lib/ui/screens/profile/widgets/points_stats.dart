@@ -16,52 +16,32 @@ class PointsStats extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Stats',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: AppTheme.textPrimaryColor,
-              ),
-            ),
-
-            const SizedBox(height: 16),
-
             Row(
               children: [
                 Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: AppTheme.primaryColor.withAlpha(25),
-                    borderRadius: BorderRadius.circular(8),
+                    color: AppTheme.primaryLightColor.withAlpha(51),
+                    borderRadius: BorderRadius.circular(12),
                   ),
-                  child: Icon(Icons.star, color: AppTheme.primaryColor),
+                  child: const Icon(Icons.star, color: AppTheme.primaryColor, size: 24),
                 ),
-                SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Points',
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: AppTheme.textSecondaryColor,
-                        ),
-                      ),
-                      Text(
-                        '$points pts',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: AppTheme.textPrimaryColor,
-                        ),
-                      ),
-                    ],
-                  ),
+                const SizedBox(width: 16),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Points', style: AppTheme.bodySecondaryStyle),
+                    Text('$points pts', style: AppTheme.h2Style),
+                  ],
                 ),
               ],
+            ),
+            const SizedBox(height: 16),
+            Text(
+              'Earn points by creating transactions and settling debts!',
+              style: AppTheme.captionStyle,
             ),
           ],
         ),

@@ -4,7 +4,6 @@ import 'package:how_much_do_i_owe_you/providers/user_provider.dart';
 import 'package:how_much_do_i_owe_you/ui/screens/home/widgets/balance_summary.dart';
 import 'package:how_much_do_i_owe_you/ui/screens/home/widgets/greeting.dart';
 import 'package:how_much_do_i_owe_you/ui/screens/home/widgets/today_date.dart';
-import 'package:how_much_do_i_owe_you/ui/widgets/custom_button.dart';
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
@@ -36,20 +35,7 @@ class HomeScreen extends ConsumerWidget {
 
                 BalanceSummary(),
 
-                const SizedBox(height: 30),
-
-                // Add new transaction button
-                SizedBox(
-                  width: double.infinity,
-                  child: PrimaryButton(
-                    onPressed: () {
-                      // Navigate to add transaction screen
-                      // Navigator.push(context, MaterialPageRoute(builder: (context) => AddTransactionScreen()));
-                    },
-                    icon: Icons.add,
-                    text: 'Add New Transaction',
-                  ),
-                ),
+                const SizedBox(height: 64),
               ],
             ),
           );

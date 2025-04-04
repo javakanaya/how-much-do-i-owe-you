@@ -43,14 +43,7 @@ class ProfileHeader extends StatelessWidget {
         const SizedBox(height: 16),
 
         // Display Name
-        Text(
-          userName,
-          style: const TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-            color: AppTheme.textPrimaryColor,
-          ),
-        ),
+        Text(userName, style: AppTheme.h1Style),
 
         // Edit profile Button
         TextButton.icon(

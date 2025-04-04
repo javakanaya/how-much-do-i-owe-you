@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:how_much_do_i_owe_you/config/app_constants.dart';
+import 'package:how_much_do_i_owe_you/config/app_theme.dart';
 
 class BalanceSummaryHeader extends StatelessWidget {
   final String title;
@@ -18,13 +19,14 @@ class BalanceSummaryHeader extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(
-          title,
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: color),
-        ),
+        Text(title, style: TextStyle(fontWeight: FontWeight.w500, color: color)),
         Text(
           AppConstants.rupiahFormat.format(amount),
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: color),
+          style: TextStyle(
+            fontFamily: AppTheme.fontFamily,
+            fontWeight: FontWeight.bold,
+            color: color,
+          ),
         ),
       ],
     );

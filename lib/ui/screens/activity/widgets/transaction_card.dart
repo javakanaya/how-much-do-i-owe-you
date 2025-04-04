@@ -6,30 +6,17 @@ import 'package:how_much_do_i_owe_you/models/index.dart';
 import 'package:how_much_do_i_owe_you/models/transaction_participant.dart';
 import 'package:how_much_do_i_owe_you/providers/auth_provider.dart';
 import 'package:how_much_do_i_owe_you/ui/screens/activity/widgets/payer_name_widget.dart';
+import 'package:how_much_do_i_owe_you/ui/screens/settlement/widgets/status_badge.dart';
 import 'package:intl/intl.dart';
 
 class TransactionCard extends ConsumerWidget {
   final TransactionModel transaction;
   const TransactionCard({super.key, required this.transaction});
 
-  Color _getStatusColor() {
-    switch (transaction.status) {
-      case 'pending':
-        return AppTheme.warningColor;
-      case 'settled':
-        return AppTheme.successColor;
-      case 'cancelled':
-        return AppTheme.errorColor;
-      default:
-        return AppTheme.infoColor;
-    }
-  }
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final currentUser = ref.watch(currentUserProvider);
     final isUserPayer = transaction.payerId == currentUser!.uid;
-    final statusColor = _getStatusColor();
 
     final currentUserParticipantData = transaction.participants.firstWhere(
       (p) => p.userId == currentUser.uid,
@@ -49,7 +36,7 @@ class TransactionCard extends ConsumerWidget {
     if (isUserPayer) {
       // Total amount minus the user's share
       relevantAmount = transaction.amount - currentUserParticipantData.owedAmount;
-      directionText = 'You paid';
+      directionText = 'you paid for others';
     } else {
       relevantAmount = currentUserParticipantData.owedAmount;
       directionText = 'you are owed';
@@ -58,11 +45,11 @@ class TransactionCard extends ConsumerWidget {
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(AppConstants.cardBorderRadius),
+        borderRadius: BorderRadius.circular(AppTheme.cardBorderRadius),
       ),
       child: InkWell(
         onTap: () {},
-        borderRadius: BorderRadius.circular(AppConstants.cardBorderRadius),
+        borderRadius: BorderRadius.circular(AppTheme.cardBorderRadius),
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: Column(
@@ -77,70 +64,42 @@ class TransactionCard extends ConsumerWidget {
                         // Transaction description
                         Text(
                           transaction.description,
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16,
-                          ),
+                          style: AppTheme.h2Style,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
 
                         // payer
                         if (!isUserPayer) PayerNameWidget(payerId: transaction.payerId),
+
+                        const SizedBox(height: 4),
+
+                        Text(
+                          DateFormat(
+                            AppConstants.dateFormatDisplay,
+                          ).format(transaction.date),
+                          style: AppTheme.captionStyle,
+                        ),
                       ],
                     ),
                   ),
 
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: statusColor.withAlpha(25),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Text(
-                      transaction.status,
-                      style: TextStyle(
-                        color: statusColor,
-                        fontSize: 12,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ),
+                  StatusBadge(status: transaction.status),
                 ],
               ),
-              const SizedBox(height: 8),
-
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                mainAxisAlignment: MainAxisAlignment.end,
                 children: [
+                  Text(directionText, style: AppTheme.bodySecondaryStyle),
+                  const SizedBox(width: 8),
                   Text(
-                    DateFormat(AppConstants.dateFormatDisplay).format(transaction.date),
-                    style: const TextStyle(
-                      fontSize: 14,
-                      color: AppTheme.textSecondaryColor,
+                    AppConstants.rupiahFormat.format(relevantAmount),
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: isUserPayer ? AppTheme.primaryColor : AppTheme.errorColor,
+                      fontFamily: AppTheme.fontFamily,
                     ),
-                  ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      Text(
-                        directionText,
-                        style: TextStyle(
-                          fontSize: 12,
-                          color:
-                              isUserPayer ? AppTheme.primaryColor : AppTheme.warningColor,
-                        ),
-                      ),
-                      Text(
-                        AppConstants.rupiahFormat.format(relevantAmount),
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                          color:
-                              isUserPayer ? AppTheme.primaryColor : AppTheme.warningColor,
-                        ),
-                      ),
-                    ],
                   ),
                 ],
               ),

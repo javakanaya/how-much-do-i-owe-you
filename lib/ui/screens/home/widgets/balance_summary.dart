@@ -4,7 +4,7 @@ import 'package:how_much_do_i_owe_you/config/app_theme.dart';
 import 'package:how_much_do_i_owe_you/models/balance_model.dart';
 import 'package:how_much_do_i_owe_you/providers/balance_provider.dart';
 import 'package:how_much_do_i_owe_you/ui/screens/home/widgets/all_settled_up_card.dart';
-import 'package:how_much_do_i_owe_you/ui/screens/home/widgets/balance_item.dart';
+import 'package:how_much_do_i_owe_you/ui/screens/home/widgets/balance_card.dart';
 import 'package:how_much_do_i_owe_you/ui/screens/home/widgets/balance_summary_error.dart';
 import 'package:how_much_do_i_owe_you/ui/screens/home/widgets/balance_summary_header.dart';
 
@@ -49,14 +49,7 @@ class BalanceSummary extends ConsumerWidget {
         return Column(
           children: [
             // Title for the section
-            const Text(
-              'Your Balances',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: AppTheme.textPrimaryColor,
-              ),
-            ),
+            const Text('Your Balances', style: AppTheme.h2Style),
 
             const SizedBox(height: 16),
 
@@ -69,7 +62,14 @@ class BalanceSummary extends ConsumerWidget {
                 color: AppTheme.errorColor,
               ),
               const SizedBox(height: 8),
-              ...youOwe.map((balance) => BalanceItem(balance: balance, isDebt: true)),
+              ...youOwe.map(
+                (balance) => BalanceCard(
+                  balance: balance,
+                  isDebt: true,
+                  onSettleUp: () {},
+                  onTap: () {},
+                ),
+              ),
             ],
 
             // "Owed to you" section (if applicable)
@@ -78,10 +78,17 @@ class BalanceSummary extends ConsumerWidget {
               BalanceSummaryHeader(
                 title: 'Owed to you',
                 amount: totalOwedToYou,
-                color: AppTheme.secondaryColor,
+                color: AppTheme.successColor,
               ),
               const SizedBox(height: 8),
-              ...owedToYou.map((balance) => BalanceItem(balance: balance, isDebt: false)),
+              ...owedToYou.map(
+                (balance) => BalanceCard(
+                  balance: balance,
+                  isDebt: false,
+                  onSettleUp: () {},
+                  onTap: () {},
+                ),
+              ),
             ],
           ],
         );

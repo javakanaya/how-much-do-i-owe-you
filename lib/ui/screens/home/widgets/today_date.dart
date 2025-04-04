@@ -3,21 +3,34 @@ import 'package:how_much_do_i_owe_you/config/app_theme.dart';
 import 'package:intl/intl.dart';
 
 class TodayDate extends StatelessWidget {
-  const TodayDate({super.key});
+  const TodayDate({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    // Get today's date
-    final now = DateTime.now();
-    final dateFormat = DateFormat('EEEE, d MMMM');
-    final formattedDate = dateFormat.format(now);
+    final today = DateTime.now();
+    final formattedDate = DateFormat('EEEE, d MMMM').format(today);
 
-    return Text(
-      formattedDate,
-      style: const TextStyle(
-        fontSize: 16,
-        fontWeight: FontWeight.bold,
-        color: AppTheme.textPrimaryColor,
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+      decoration: BoxDecoration(
+        color: AppTheme.primaryLightColor.withAlpha(25),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Icon(Icons.calendar_today, size: 16, color: AppTheme.primaryColor),
+          const SizedBox(width: 8),
+          Text(
+            formattedDate,
+            style: TextStyle(
+              fontSize: 14,
+              color: AppTheme.primaryColor,
+              fontWeight: FontWeight.w500,
+              fontFamily: AppTheme.fontFamily,
+            ),
+          ),
+        ],
       ),
     );
   }

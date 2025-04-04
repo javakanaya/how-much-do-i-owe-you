@@ -23,14 +23,8 @@ class InfoRow extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                title,
-                style: const TextStyle(fontSize: 12, color: AppTheme.textSecondaryColor),
-              ),
-              Text(
-                value,
-                style: const TextStyle(fontSize: 16, color: AppTheme.textPrimaryColor),
-              ),
+              Text(title, style: AppTheme.bodySecondaryStyle),
+              Text(value, style: AppTheme.bodyStyle),
             ],
           ),
         ),

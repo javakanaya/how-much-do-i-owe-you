@@ -86,6 +86,7 @@ Future<UserModel?> dummyUserData(DummyUserDataRef ref, String userId) async {
   // Simulate network delay
   await Future.delayed(const Duration(milliseconds: 500));
 
+  // throw Exception('Dummy data not available');
   // Return dummy user data based on userId
   switch (userId) {
     case 'user1':

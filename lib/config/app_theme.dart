@@ -32,27 +32,84 @@ class AppTheme {
   static const Color errorColor = Color(0xFFF44336);
   static const Color infoColor = Color(0xFF2196F3);
 
+  // App settings
+  static const double defaultPadding = 16.0;
+  static const double cardBorderRadius = 15.0;
+  static const Duration animationDuration = Duration(milliseconds: 300);
+
   // Font family
   static const String fontFamily = 'Poppins';
 
-  // Text styles
-  static const TextStyle headingStyle = TextStyle(
-    fontSize: 24,
+  // Add these to your AppTheme class
+  static const TextStyle h1Style = TextStyle(
+    fontSize: 20,
     fontWeight: FontWeight.bold,
     color: textPrimaryColor,
+    fontFamily: fontFamily,
   );
 
-  static const TextStyle subheadingStyle = TextStyle(
+  static const TextStyle h2Style = TextStyle(
     fontSize: 18,
-    fontWeight: FontWeight.w500,
+    fontWeight: FontWeight.w600,
     color: textPrimaryColor,
+    fontFamily: fontFamily,
   );
 
-  static const TextStyle bodyStyle = TextStyle(fontSize: 16, color: textPrimaryColor);
+  static const TextStyle bodyStyle = TextStyle(
+    fontSize: 14,
+    fontWeight: FontWeight.normal,
+    color: textPrimaryColor,
+    fontFamily: fontFamily,
+  );
+
+  static const TextStyle bodySecondaryStyle = TextStyle(
+    fontSize: 12,
+    fontWeight: FontWeight.normal,
+    color: textSecondaryColor,
+    fontFamily: fontFamily,
+  );
 
   static const TextStyle captionStyle = TextStyle(
-    fontSize: 14,
+    fontSize: 11,
+    fontWeight: FontWeight.w500,
     color: textSecondaryColor,
+    fontFamily: fontFamily,
+  );
+
+  static const TextStyle buttonStyle = TextStyle(
+    fontSize: 14,
+    fontWeight: FontWeight.w500,
+    color: Colors.white,
+    fontFamily: fontFamily,
+  );
+
+  // Add status styles
+  static const TextStyle pendingStyle = TextStyle(
+    fontSize: 12,
+    fontWeight: FontWeight.w500,
+    color: warningColor,
+    fontFamily: fontFamily,
+  );
+
+  static const TextStyle settledStyle = TextStyle(
+    fontSize: 12,
+    fontWeight: FontWeight.w500,
+    color: successColor,
+    fontFamily: fontFamily,
+  );
+
+  static const TextStyle errorStyle = TextStyle(
+    fontSize: 12,
+    fontWeight: FontWeight.w500,
+    color: errorColor,
+    fontFamily: fontFamily,
+  );
+
+  // Add standard decorations
+  static const BoxDecoration standardCardDecoration = BoxDecoration(
+    color: cardColor,
+    borderRadius: BorderRadius.all(Radius.circular(cardBorderRadius)),
+    boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 2, offset: Offset(0, 1))],
   );
 
   // Create the main theme data
