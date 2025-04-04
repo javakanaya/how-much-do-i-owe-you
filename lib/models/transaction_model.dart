@@ -1,17 +1,19 @@
 // models/transaction_model.dart
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:how_much_do_i_owe_you/models/transaction_participant.dart';
+import 'package:how_much_do_i_owe_you/providers/transaction_provider.dart';
 
 class TransactionModel {
-  final String transactionId;
+  final String id;
   final String description;
   final double amount;
   final DateTime date;
   final String payerId;
   final String status; // 'active', 'settled', 'canceled'
-  final List<String> participants; // List of participant IDs
+  final List<TransactionParticipant> participants; // List of participant IDs
 
   TransactionModel({
-    required this.transactionId,
+    required this.id,
     required this.description,
     required this.amount,
     required this.date,
@@ -21,15 +23,15 @@ class TransactionModel {
   });
 
   // Convert TransactionModel to Map for Firestore
-  Map<String, dynamic> toMap() {
+  Map<String, dynamic> toFirestore() {
     return {
-      'transactionId': transactionId,
+      'id': id,
       'description': description,
       'amount': amount,
       'date': Timestamp.fromDate(date),
       'payerId': payerId,
       'status': status,
-      'participants': participants,
+      'participants': participants.map((p) => p.toFirestore()).toList(),
     };
   }
 
@@ -37,13 +39,18 @@ class TransactionModel {
   factory TransactionModel.fromFirestore(DocumentSnapshot doc) {
     Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
 
-    List<String> participantsList = [];
+    // Convert participants data
+    List<TransactionParticipant> participantsList = [];
     if (data['participants'] != null) {
-      participantsList = List<String>.from(data['participants']);
+      participantsList = List<TransactionParticipant>.from(
+        (data['participants'] as List).map(
+          (participant) => TransactionParticipant.fromFirestore(participant),
+        ),
+      );
     }
 
     return TransactionModel(
-      transactionId: doc.id,
+      id: doc.id,
       description: data['description'] ?? '',
       amount:
           (data['amount'] is int)
@@ -58,17 +65,17 @@ class TransactionModel {
 
   // Create a copy of TransactionModel with some fields changed
   TransactionModel copyWith({
-    String? transactionId,
+    String? id,
     String? description,
     double? amount,
     DateTime? date,
     String? payerId,
     String? categoryId,
     String? status,
-    List<String>? participants,
+    List<TransactionParticipant>? participants,
   }) {
     return TransactionModel(
-      transactionId: transactionId ?? this.transactionId,
+      id: id ?? this.id,
       description: description ?? this.description,
       amount: amount ?? this.amount,
       date: date ?? this.date,

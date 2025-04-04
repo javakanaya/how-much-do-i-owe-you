@@ -1,10 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:how_much_do_i_owe_you/config/app_constants.dart';
 import 'package:how_much_do_i_owe_you/models/index.dart';
 
 class BalanceRepository {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  CollectionReference get _balancesCollection => _firestore.collection('balances');
+  CollectionReference get _balancesCollection =>
+      _firestore.collection(AppConstants.balancesCollection);
 
   // Fetch all balances for a user
   Future<List<BalanceModel>> getUserBalances(String userId) async {

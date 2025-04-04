@@ -73,9 +73,9 @@ Future<UserModel?> userData(Ref ref, String userId) async {
   final repository = ref.read(userRepositoryProvider);
 
   try {
+    // Try to get existing user
     return await repository.getUserById(userId);
   } catch (e) {
-    // Handle error or return null
     return null;
   }
 }

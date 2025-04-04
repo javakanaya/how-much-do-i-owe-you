@@ -1,249 +1,244 @@
-// providers/transaction_provider.dart
-import 'package:flutter/foundation.dart';
-import 'package:how_much_do_i_owe_you/models/user_model.dart';
-import 'package:how_much_do_i_owe_you/models/participant_model.dart';
-import 'package:how_much_do_i_owe_you/services/transaction_service.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:how_much_do_i_owe_you/models/index.dart';
+import 'package:how_much_do_i_owe_you/models/transaction_participant.dart';
+import 'package:how_much_do_i_owe_you/providers/auth_provider.dart';
+import 'package:how_much_do_i_owe_you/repositories/transaction_repository.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-// Helper class for tracking participant data during transaction creation
-class TransactionParticipant {
-  final UserModel user;
-  final double? amount;
-  final bool isPayer;
+part 'transaction_provider.g.dart';
 
-  TransactionParticipant({
-    required this.user,
-    this.amount,
-    required this.isPayer,
-  });
+@riverpod
+TransactionRepository transactionRepository(Ref ref) {
+  return TransactionRepository();
+}
 
-  TransactionParticipant copyWith({
-    UserModel? user,
-    double? amount,
-    bool? isPayer,
-  }) {
-    return TransactionParticipant(
-      user: user ?? this.user,
-      amount: amount,
-      isPayer: isPayer ?? this.isPayer,
-    );
+@riverpod
+Future<TransactionModel> transactionData(Ref ref, String transactionId) async {
+  final repository = ref.read(transactionRepositoryProvider);
+
+  try {
+    return await repository.getTransactionById(transactionId);
+  } catch (e) {
+    throw Exception('Failed to fetch transaction data: $e');
   }
 }
 
-class TransactionProvider with ChangeNotifier {
-  final TransactionService _transactionService = TransactionService();
+@riverpod
+class UserTransactions extends _$UserTransactions {
+  @override
+  FutureOr<List<TransactionModel>> build() async {
+    final authUser = ref.watch(currentUserProvider);
 
-  // Transaction data
-  String _description = '';
-  double _amount = 0.0;
-  List<TransactionParticipant> _participants = [];
+    if (authUser == null) {
+      return [];
+    }
 
-  // Loading states
-  bool _isLoading = false;
-  String? _errorMessage;
-  bool _transactionCreated = false;
+    // For development/testing, use dummy transactions
+    // Comment this out to use real data
+    return getDummyTransactions(authUser.uid);
 
-  // Getters
-  String get description => _description;
-  double get amount => _amount;
-  List<TransactionParticipant> get participants =>
-      List.unmodifiable(_participants);
-  bool get isLoading => _isLoading;
-  String? get errorMessage => _errorMessage;
-  bool get transactionCreated => _transactionCreated;
-
-  // Reset the state for a new transaction
-  void reset() {
-    _description = '';
-    _amount = 0.0;
-    _participants = [];
-    _errorMessage = null;
-    _transactionCreated = false;
-    notifyListeners();
+    return _fetchUserTransactions(authUser.uid);
   }
 
-  // Set description
-  void setDescription(String description) {
-    _description = description;
-    notifyListeners();
+  Future<List<TransactionModel>> _fetchUserTransactions(String userId) async {
+    final repository = ref.read(transactionRepositoryProvider);
+    return await repository.getUserTransactions(userId);
   }
 
-  // Set amount
-  void setAmount(double amount) {
-    _amount = amount;
-    notifyListeners();
-  }
+  // Helper method to create dummy transactions that align with the dummy balances
+  List<TransactionModel> getDummyTransactions(String currentUserId) {
+    final now = DateTime.now();
+    final dummyUsers = ['user1', 'user2', 'user3', 'user4', 'user5'];
 
-  // Initialize with current user as payer
-  void initializeWithUser(UserModel currentUser) {
-    if (_participants.isEmpty) {
-      _participants.add(
-        TransactionParticipant(user: currentUser, amount: 0.0, isPayer: true),
-      );
-      notifyListeners();
-    }
-  }
+    // These transactions should result in the following balances:
+    // - You owe 50,000 to user1
+    // - You owe 25,000 to user2
+    // - user3 owes you 75,000
+    // - user4 owes you 35,000
+    // - user5 owes you 10,000 (recently updated)
 
-  // Add or update participants based on selection
-  void updateParticipants(List<UserModel> selectedUsers) {
-    // Create a map of current participants for easy lookup
-    final currentParticipants = Map.fromEntries(
-      _participants.map((p) => MapEntry(p.user.id, p)),
-    );
+    return [
+      // Transaction 1: User1 paid for dinner (you owe them)
+      TransactionModel(
+        id: 'tx1',
+        description: 'Dinner at Restaurant',
+        amount: 150000,
+        date: now.subtract(const Duration(days: 5)),
+        payerId: dummyUsers[0], // user1
+        status: 'pending',
+        participants: [
+          TransactionParticipant(
+            userId: currentUserId,
+            owedAmount: 50000, // You owe 50,000
+            isPayer: false,
+            isSettled: false,
+          ),
+          TransactionParticipant(
+            userId: dummyUsers[0], // user1
+            owedAmount: 50000,
+            isPayer: true,
+            isSettled: false,
+          ),
+          TransactionParticipant(
+            userId: dummyUsers[4], // user5
+            owedAmount: 50000,
+            isPayer: false,
+            isSettled: false,
+          ),
+        ],
+      ),
 
-    // Create a set of selected user IDs
-    selectedUsers.map((user) => user.id).toSet();
+      // Transaction 2: User2 paid for movie tickets (you owe them)
+      TransactionModel(
+        id: 'tx2',
+        description: 'Movie Tickets',
+        amount: 75000,
+        date: now.subtract(const Duration(days: 3)),
+        payerId: dummyUsers[1], // user2
+        status: 'pending',
+        participants: [
+          TransactionParticipant(
+            userId: currentUserId,
+            owedAmount: 25000, // You owe 25,000
+            isPayer: false,
+            isSettled: false,
+          ),
+          TransactionParticipant(
+            userId: dummyUsers[1], // user2
+            owedAmount: 25000,
+            isPayer: true,
+            isSettled: false,
+          ),
+          TransactionParticipant(
+            userId: dummyUsers[3], // user4
+            owedAmount: 25000,
+            isPayer: false,
+            isSettled: false,
+          ),
+        ],
+      ),
 
-    // Start with a new list but keep the payer
-    final payer = _participants.firstWhere(
-      (p) => p.isPayer,
-      orElse: () {
-        // Return the first participant if there's any, otherwise null
-        return _participants.first;
-      },
-    );
+      // Transaction 3: You paid for groceries (user3 owes you)
+      TransactionModel(
+        id: 'tx3',
+        description: 'Groceries',
+        amount: 150000,
+        date: now.subtract(const Duration(days: 7)),
+        payerId: currentUserId,
+        status: 'pending',
+        participants: [
+          TransactionParticipant(
+            userId: currentUserId,
+            owedAmount: 75000,
+            isPayer: true,
+            isSettled: false,
+          ),
+          TransactionParticipant(
+            userId: dummyUsers[2], // user3
+            owedAmount: 75000, // They owe you 75,000
+            isPayer: false,
+            isSettled: false,
+          ),
+        ],
+      ),
 
-    final newParticipants = <TransactionParticipant>[];
+      // Transaction 4: You paid for taxi (user4 owes you)
+      TransactionModel(
+        id: 'tx4',
+        description: 'Taxi Ride',
+        amount: 70000,
+        date: now.subtract(const Duration(days: 1)),
+        payerId: currentUserId,
+        status: 'pending',
+        participants: [
+          TransactionParticipant(
+            userId: currentUserId,
+            owedAmount: 35000,
+            isPayer: true,
+            isSettled: false,
+          ),
+          TransactionParticipant(
+            userId: dummyUsers[3], // user4
+            owedAmount: 35000, // They owe you 35,000
+            isPayer: false,
+            isSettled: false,
+          ),
+        ],
+      ),
 
-    // Add the payer first if it exists
-    newParticipants.add(payer);
+      // Transaction 5: You paid for lunch (user5 owes you)
+      TransactionModel(
+        id: 'tx5',
+        description: 'Lunch',
+        amount: 60000,
+        date: now.subtract(const Duration(hours: 12)),
+        payerId: currentUserId,
+        status: 'pending',
+        participants: [
+          TransactionParticipant(
+            userId: currentUserId,
+            owedAmount: 30000,
+            isPayer: true,
+            isSettled: false,
+          ),
+          TransactionParticipant(
+            userId: dummyUsers[4], // user5
+            owedAmount: 30000,
+            isPayer: false,
+            isSettled: false,
+          ),
+        ],
+      ),
 
-    // Add/update participants based on selection
-    for (final user in selectedUsers) {
-      // Skip the payer (already added)
-      if (user.id == payer.user.id) {
-        continue;
-      }
+      // Transaction 6: Another transaction with user5 (adds up to 10,000 balance)
+      TransactionModel(
+        id: 'tx6',
+        description: 'Coffee & Snacks',
+        amount: 40000,
+        date: now.subtract(const Duration(hours: 14)),
+        payerId: dummyUsers[4], // user5
+        status: 'pending',
+        participants: [
+          TransactionParticipant(
+            userId: currentUserId,
+            owedAmount: 20000, // You owe 20,000
+            isPayer: false,
+            isSettled: false,
+          ),
+          TransactionParticipant(
+            userId: dummyUsers[4], // user5
+            owedAmount: 20000,
+            isPayer: true,
+            isSettled: false,
+          ),
+        ],
+      ),
 
-      // If user was already a participant, preserve their amount
-      if (currentParticipants.containsKey(user.id)) {
-        newParticipants.add(currentParticipants[user.id]!);
-      } else {
-        // Add as new participant
-        newParticipants.add(
-          TransactionParticipant(user: user, amount: 0.0, isPayer: false),
-        );
-      }
-    }
-
-    _participants = newParticipants;
-    notifyListeners();
-  }
-
-  // Update a participant's amount
-  void updateParticipantAmount(String userId, double? amount) {
-    final index = _participants.indexWhere((p) => p.user.id == userId);
-
-    if (index != -1) {
-      _participants[index] = _participants[index].copyWith(amount: amount);
-      notifyListeners();
-    }
-  }
-
-  // Remove a participant
-  void removeParticipant(String userId) {
-    // Don't allow removing the payer
-    if (_participants.any((p) => p.user.id == userId && p.isPayer)) {
-      return;
-    }
-
-    _participants.removeWhere((p) => p.user.id == userId);
-    notifyListeners();
-  }
-
-  // Calculate remaining amount to distribute
-  double getRemainingAmount() {
-    final allocatedAmount = _participants.fold<double>(
-      0.0,
-      (sum, participant) => sum + (participant.amount ?? 0.0),
-    );
-
-    return _amount - allocatedAmount;
-  }
-
-  // Split amount equally among participants
-  void splitEqually() {
-    if (_amount <= 0 || _participants.isEmpty) return;
-
-    final amountPerPerson = _amount / _participants.length;
-
-    for (var i = 0; i < _participants.length; i++) {
-      _participants[i] = _participants[i].copyWith(amount: amountPerPerson);
-    }
-
-    notifyListeners();
-  }
-
-  // Create transaction
-  Future<bool> createTransaction() async {
-    // Validate inputs
-    if (_description.isEmpty) {
-      _errorMessage = 'Please enter a description';
-      notifyListeners();
-      return false;
-    }
-
-    if (_amount <= 0) {
-      _errorMessage = 'Please enter a valid amount';
-      notifyListeners();
-      return false;
-    }
-
-    if (_participants.length < 2) {
-      _errorMessage =
-          'Add at least one other person to share this expense with';
-      notifyListeners();
-      return false;
-    }
-
-    // Validate total amount matches allocated amounts
-    final allocatedAmount = _participants.fold<double>(
-      0.0,
-      (sum, participant) => sum + (participant.amount ?? 0.0),
-    );
-
-    final difference = (_amount - allocatedAmount).abs();
-    if (difference > 0.01) {
-      _errorMessage =
-          'The allocated amounts (${allocatedAmount.toStringAsFixed(2)}) '
-          'don\'t match the total amount (${_amount.toStringAsFixed(2)})';
-      notifyListeners();
-      return false;
-    }
-
-    // Find payer
-    final payerEntry = _participants.firstWhere((p) => p.isPayer);
-
-    _isLoading = true;
-    _errorMessage = null;
-    notifyListeners();
-
-    try {
-      await _transactionService.createTransaction(
-        description: _description.trim(),
-        amount: _amount,
-        payerId: payerEntry.user.id,
-        participants:
-            _participants
-                .map(
-                  (p) => ParticipantModel(
-                    userId: p.user.id,
-                    transactionId: '', // Will be set by the transaction service
-                    owedAmount: p.amount ?? 0.0,
-                    isPayer: p.isPayer,
-                  ),
-                )
-                .toList(),
-      );
-
-      _transactionCreated = true;
-      _isLoading = false;
-      notifyListeners();
-      return true;
-    } catch (e) {
-      _errorMessage = 'Error creating transaction: $e';
-      _isLoading = false;
-      notifyListeners();
-      return false;
-    }
+      // Transaction 7: Settled transaction (for history)
+      TransactionModel(
+        id: 'tx7',
+        description: 'Weekend Trip',
+        amount: 500000,
+        date: now.subtract(const Duration(days: 20)),
+        payerId: currentUserId,
+        status: 'settled',
+        participants: [
+          TransactionParticipant(
+            userId: currentUserId,
+            owedAmount: 250000,
+            isPayer: true,
+            isSettled: true,
+            settledAt: now.subtract(const Duration(days: 15)),
+          ),
+          TransactionParticipant(
+            userId: dummyUsers[1], // user2
+            owedAmount: 250000,
+            isPayer: false,
+            isSettled: true,
+            settledAt: now.subtract(const Duration(days: 15)),
+          ),
+        ],
+      ),
+    ];
   }
 }
