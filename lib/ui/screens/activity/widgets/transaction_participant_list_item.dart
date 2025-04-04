@@ -14,71 +14,127 @@ class TransactionParticipantListItem extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     // Use dummy data for development; switch to real data in production
     final userAsync = ref.watch(dummyUserDataProvider(participant.userId));
+    final Color backgroundColor =
+        participant.isPayer
+            ? AppTheme.primaryColor.withAlpha(51)
+            : participant.isSettled
+            ? AppTheme.secondaryColor.withAlpha(51)
+            : AppTheme.errorColor.withAlpha(51);
+
+    final Color textColor =
+        participant.isPayer
+            ? AppTheme.primaryColor
+            : participant.isSettled
+            ? AppTheme.secondaryColor
+            : AppTheme.errorColor;
+    // Define colors based on participant status
 
     return userAsync.when(
       data: (userData) {
-        // Define colors based on participant status
-        final Color backgroundColor =
-            participant.isPayer
-                ? AppTheme.primaryColor.withAlpha(51)
-                : participant.isSettled
-                ? AppTheme.secondaryColor.withAlpha(51)
-                : AppTheme.errorColor.withAlpha(51);
+        return Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8.0),
+          child: Row(
+            children: [
+              // Avatar
+              CircleAvatar(
+                backgroundColor: backgroundColor,
+                radius: 20,
+                child:
+                    userData?.photoURL != null
+                        ? CircleAvatar(
+                          radius: 18,
+                          backgroundImage: NetworkImage(userData!.photoURL!),
+                        )
+                        : participant.isPayer
+                        ? Text(
+                          _getInitials(userData!.displayName),
+                          style: TextStyle(color: textColor, fontWeight: FontWeight.bold),
+                        )
+                        : Icon(
+                          participant.isSettled
+                              ? Icons.check_circle
+                              : Icons.account_balance_wallet,
+                          color: textColor,
+                          size: 20,
+                        ),
+              ),
 
-        final Color textColor =
-            participant.isPayer
-                ? AppTheme.primaryColor
-                : participant.isSettled
-                ? AppTheme.secondaryColor
-                : AppTheme.errorColor;
+              const SizedBox(width: 12),
 
-        return ListTile(
-          leading: CircleAvatar(
-            backgroundColor: backgroundColor,
-            child:
-                userData?.photoURL != null
-                    ? CircleAvatar(backgroundImage: NetworkImage(userData!.photoURL!))
-                    : Text(
-                      _getInitials(userData!.displayName),
-                      style: TextStyle(color: textColor, fontWeight: FontWeight.bold),
+              // Name and status
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      userData!.displayName,
+                      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                     ),
+                    Text(
+                      _getParticipantStatus(),
+                      style: TextStyle(fontSize: 12, color: AppTheme.textSecondaryColor),
+                    ),
+                  ],
+                ),
+              ),
+
+              // Amount
+              Text(
+                AppConstants.rupiahFormat.format(participant.owedAmount),
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                  color: textColor,
+                ),
+              ),
+            ],
           ),
-          title: Text(
-            userData.displayName,
-            style: AppTheme.bodyStyle.copyWith(fontWeight: FontWeight.w500),
-          ),
-          subtitle: Text(
-            _getParticipantStatus(),
-            style: TextStyle(color: textColor, fontSize: 12),
-          ),
-          trailing:
-              participant.isPayer
-                  ? Icon(Icons.check_circle, color: textColor)
-                  : Text(
-                    AppConstants.rupiahFormat.format(participant.owedAmount),
-                    style: TextStyle(fontWeight: FontWeight.bold, color: textColor),
-                  ),
         );
       },
       loading:
-          () => const ListTile(
-            leading: CircleAvatar(
+          () => const Padding(
+            padding: EdgeInsets.symmetric(vertical: 16.0),
+            child: Center(
               child: SizedBox(
-                width: 20,
-                height: 20,
+                width: 24,
+                height: 24,
                 child: CircularProgressIndicator(strokeWidth: 2),
               ),
             ),
-            title: Text("Loading..."),
           ),
       error:
-          (error, _) => ListTile(
-            leading: const CircleAvatar(
-              backgroundColor: Colors.grey,
-              child: Icon(Icons.error_outline, color: Colors.white),
+          (error, _) => Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8.0),
+            child: Row(
+              children: [
+                CircleAvatar(
+                  backgroundColor: Colors.grey.withAlpha(51),
+                  radius: 20,
+                  child: const Icon(Icons.error_outline, color: Colors.grey, size: 20),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        "Failed to load user",
+                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                      ),
+                      Text(
+                        error.toString(),
+                        style: const TextStyle(
+                          fontSize: 12,
+                          color: AppTheme.textSecondaryColor,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ),
-            title: const Text("Failed to load user"),
-            subtitle: Text(error.toString(), style: const TextStyle(fontSize: 10)),
           ),
     );
   }

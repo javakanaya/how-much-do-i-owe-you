@@ -4,7 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:how_much_do_i_owe_you/config/app_constants.dart';
 import 'package:how_much_do_i_owe_you/config/app_theme.dart';
 import 'package:how_much_do_i_owe_you/models/settlement_model.dart';
-import 'package:how_much_do_i_owe_you/ui/screens/settlement/widgets/status_badge.dart';
+import 'package:how_much_do_i_owe_you/ui/widgets/status_badge.dart';
 
 class SettlementDetailsHeader extends StatelessWidget {
   final SettlementModel settlement;
@@ -29,9 +29,7 @@ class SettlementDetailsHeader extends StatelessWidget {
             StatusBadge(status: settlement.status),
             const Spacer(),
             Text(
-              DateFormat(
-                AppConstants.dateTimeFormatDisplay,
-              ).format(settlement.date),
+              DateFormat(AppConstants.dateTimeFormatDisplay).format(settlement.date),
               style: const TextStyle(color: AppTheme.textSecondaryColor),
             ),
           ],

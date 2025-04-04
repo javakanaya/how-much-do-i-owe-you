@@ -15,19 +15,19 @@ class StatusBadge extends StatelessWidget {
 
     switch (status.toLowerCase()) {
       case AppConstants.statusPending:
-        backgroundColor = AppTheme.warningColor.withAlpha(51);
+        backgroundColor = AppTheme.warningColor.withAlpha(31);
         textStyle = AppTheme.pendingStyle;
         break;
       case AppConstants.statusSettled:
-        backgroundColor = AppTheme.successColor.withAlpha(51);
+        backgroundColor = AppTheme.successColor.withAlpha(31);
         textStyle = AppTheme.settledStyle;
         break;
       case AppConstants.statusCancelled:
-        backgroundColor = AppTheme.errorColor.withAlpha(51);
+        backgroundColor = AppTheme.errorColor.withAlpha(31);
         textStyle = AppTheme.errorStyle;
         break;
       default:
-        backgroundColor = AppTheme.infoColor.withAlpha(51);
+        backgroundColor = AppTheme.infoColor.withAlpha(31);
         textStyle = AppTheme.bodySecondaryStyle;
     }
 

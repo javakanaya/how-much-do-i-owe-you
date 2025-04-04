@@ -13,34 +13,35 @@ class TransactionParticipantsList extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'Participants',
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-        ),
-        const SizedBox(height: 12),
+        const SizedBox(height: 16),
+        const Text('Participants', style: AppTheme.h2Style),
+        const SizedBox(height: 4),
         Card(
-          elevation: 0,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
             side: BorderSide(color: Colors.grey.shade200),
           ),
           child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8),
-            child: ListView.separated(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: participants.length,
-              separatorBuilder:
-                  (context, index) => const Divider(
-                    height: 1,
-                    thickness: 0.5,
-                    indent: 16,
-                    endIndent: 16,
-                    color: AppTheme.dividerColor,
-                  ),
-              itemBuilder:
-                  (context, index) =>
-                      TransactionParticipantListItem(participant: participants[index]),
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              children:
+                  participants.asMap().entries.map((entry) {
+                    final index = entry.key;
+                    final participant = entry.value;
+
+                    return Column(
+                      children: [
+                        TransactionParticipantListItem(participant: participant),
+                        // Add divider for all except the last item
+                        if (index < participants.length - 1)
+                          const Divider(
+                            height: 32,
+                            thickness: 1,
+                            color: AppTheme.dividerColor,
+                          ),
+                      ],
+                    );
+                  }).toList(),
             ),
           ),
         ),

@@ -2,7 +2,7 @@ import 'package:flutter/widgets.dart';
 import 'package:how_much_do_i_owe_you/config/app_constants.dart';
 import 'package:how_much_do_i_owe_you/config/app_theme.dart';
 import 'package:how_much_do_i_owe_you/models/index.dart';
-import 'package:how_much_do_i_owe_you/ui/screens/activity/widgets/status_badge.dart';
+import 'package:how_much_do_i_owe_you/ui/widgets/status_badge.dart';
 import 'package:intl/intl.dart';
 
 class TransactionDetailHeader extends StatelessWidget {
