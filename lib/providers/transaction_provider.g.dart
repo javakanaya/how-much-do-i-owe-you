@@ -171,7 +171,7 @@ class _TransactionDataProviderElement
   String get transactionId => (origin as TransactionDataProvider).transactionId;
 }
 
-String _$userTransactionsHash() => r'f30a010d7037b663a453bfbce4ca82433ebd7e11';
+String _$userTransactionsHash() => r'6b93c36fe56359883d5be23ea5b938e759a41ec2';
 
 /// See also [UserTransactions].
 @ProviderFor(UserTransactions)

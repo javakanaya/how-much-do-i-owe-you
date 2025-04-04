@@ -87,22 +87,22 @@ class ProfileScreen extends ConsumerWidget {
                   userName: userData.displayName,
                 ),
 
-                const SizedBox(height: 32),
+                const SizedBox(height: 4),
 
                 UserInfo(user: userData),
 
-                const SizedBox(height: 32),
+                const SizedBox(height: 4),
 
                 PointsStats(points: userData.totalPoints),
 
-                const SizedBox(height: 32),
+                const SizedBox(height: 8),
 
                 PrimaryButton(
                   text: "Logout",
                   onPressed: () => _confirmSignOut(context, ref),
                 ),
 
-                const SizedBox(height: 32),
+                const SizedBox(height: 4),
 
                 AppVersion(),
               ],

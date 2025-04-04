@@ -5,6 +5,7 @@ import 'package:how_much_do_i_owe_you/config/app_theme.dart';
 import 'package:how_much_do_i_owe_you/models/index.dart';
 import 'package:how_much_do_i_owe_you/models/transaction_participant.dart';
 import 'package:how_much_do_i_owe_you/providers/auth_provider.dart';
+import 'package:how_much_do_i_owe_you/ui/screens/activity/transaction_detail_screen.dart';
 import 'package:how_much_do_i_owe_you/ui/screens/activity/widgets/payer_name_widget.dart';
 import 'package:how_much_do_i_owe_you/ui/screens/settlement/widgets/status_badge.dart';
 import 'package:intl/intl.dart';
@@ -48,7 +49,15 @@ class TransactionCard extends ConsumerWidget {
         borderRadius: BorderRadius.circular(AppTheme.cardBorderRadius),
       ),
       child: InkWell(
-        onTap: () {},
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder:
+                  (context) => TransactionDetailScreen(transactionId: transaction.id),
+            ),
+          );
+        },
         borderRadius: BorderRadius.circular(AppTheme.cardBorderRadius),
         child: Padding(
           padding: const EdgeInsets.all(16),

@@ -77,7 +77,7 @@ class UserTransactions extends _$UserTransactions {
             userId: dummyUsers[0], // user1
             owedAmount: 50000,
             isPayer: true,
-            isSettled: false,
+            isSettled: true,
           ),
           TransactionParticipant(
             userId: dummyUsers[4], // user5
@@ -107,7 +107,7 @@ class UserTransactions extends _$UserTransactions {
             userId: dummyUsers[1], // user2
             owedAmount: 25000,
             isPayer: true,
-            isSettled: false,
+            isSettled: true,
           ),
           TransactionParticipant(
             userId: dummyUsers[3], // user4
@@ -131,7 +131,7 @@ class UserTransactions extends _$UserTransactions {
             userId: currentUserId,
             owedAmount: 75000,
             isPayer: true,
-            isSettled: false,
+            isSettled: true,
           ),
           TransactionParticipant(
             userId: dummyUsers[2], // user3
@@ -155,7 +155,7 @@ class UserTransactions extends _$UserTransactions {
             userId: currentUserId,
             owedAmount: 35000,
             isPayer: true,
-            isSettled: false,
+            isSettled: true,
           ),
           TransactionParticipant(
             userId: dummyUsers[3], // user4
@@ -179,7 +179,7 @@ class UserTransactions extends _$UserTransactions {
             userId: currentUserId,
             owedAmount: 30000,
             isPayer: true,
-            isSettled: false,
+            isSettled: true,
           ),
           TransactionParticipant(
             userId: dummyUsers[4], // user5
@@ -209,7 +209,7 @@ class UserTransactions extends _$UserTransactions {
             userId: dummyUsers[4], // user5
             owedAmount: 20000,
             isPayer: true,
-            isSettled: false,
+            isSettled: true,
           ),
         ],
       ),

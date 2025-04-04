@@ -1,7 +1,6 @@
 // models/transaction_model.dart
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:how_much_do_i_owe_you/models/transaction_participant.dart';
-import 'package:how_much_do_i_owe_you/providers/transaction_provider.dart';
 
 class TransactionModel {
   final String id;
