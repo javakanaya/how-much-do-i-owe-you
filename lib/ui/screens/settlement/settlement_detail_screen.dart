@@ -8,7 +8,6 @@ import 'package:provider/provider.dart';
 import 'package:how_much_do_i_owe_you/models/settlement_model.dart';
 import 'package:how_much_do_i_owe_you/models/transaction_model.dart';
 import 'package:how_much_do_i_owe_you/models/user_model.dart';
-import 'package:how_much_do_i_owe_you/providers/auth_provider.dart';
 import 'package:how_much_do_i_owe_you/services/settlement_service.dart';
 import 'package:how_much_do_i_owe_you/services/transaction_service.dart';
 import 'package:how_much_do_i_owe_you/services/user_service.dart';
@@ -49,9 +48,7 @@ class _SettlementDetailScreenState extends State<SettlementDetailScreen> {
       });
 
       // Load settlement
-      final settlement = await _settlementService.getSettlementById(
-        widget.settlementId,
-      );
+      final settlement = await _settlementService.getSettlementById(widget.settlementId);
 
       if (settlement == null) {
         throw Exception('Settlement not found');
@@ -64,9 +61,7 @@ class _SettlementDetailScreenState extends State<SettlementDetailScreen> {
       // Load transactions
       final List<TransactionModel> transactions = [];
       for (var transactionId in settlement.transactionIds) {
-        final transaction = await _transactionService.getTransactionById(
-          transactionId,
-        );
+        final transaction = await _transactionService.getTransactionById(transactionId);
         if (transaction != null) {
           transactions.add(transaction);
         }

@@ -26,8 +26,7 @@ class BalanceCard extends ConsumerWidget {
     final otherUserId =
         balance.userIdA == currentUser?.uid ? balance.userIdB : balance.userIdA;
 
-    // final otherUserAsync = ref.watch(userDataProvider(otherUserId));
-    final otherUserAsync = ref.watch(dummyUserDataProvider(otherUserId));
+    final otherUserDataAsync = ref.watch(userDataProvider(otherUserId));
 
     final Color amountColor = !isDebt ? AppTheme.successColor : AppTheme.errorColor;
     final IconData directionIcon = !isDebt ? Icons.arrow_downward : Icons.arrow_upward;
@@ -65,7 +64,7 @@ class BalanceCard extends ConsumerWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    otherUserAsync.when(
+                    otherUserDataAsync.when(
                       data:
                           (otherUserData) =>
                               Text(otherUserData!.displayName, style: AppTheme.bodyStyle),

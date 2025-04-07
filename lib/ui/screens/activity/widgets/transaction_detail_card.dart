@@ -19,8 +19,7 @@ class TransactionDetailCard extends ConsumerWidget {
       (p) => p.userId == currentUserAsync?.uid,
     );
 
-    // final payerUserDataAsync = ref.watch(userDataProvider(transaction.payerId));
-    final payerUserDataAsync = ref.watch(dummyUserDataProvider(transaction.payerId));
+    final payerUserDataAsync = ref.watch(userDataProvider(transaction.payerId));
 
     return Card(
       shape: RoundedRectangleBorder(

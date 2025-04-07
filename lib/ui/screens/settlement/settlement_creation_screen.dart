@@ -1,6 +1,5 @@
 // ui/screens/settlement/settlement_creation_screen.dart
 import 'package:flutter/material.dart';
-import 'package:how_much_do_i_owe_you/providers/auth_provider.dart';
 import 'package:how_much_do_i_owe_you/ui/screens/settlement/widgets/settlement_creation_bottom_bar.dart';
 import 'package:provider/provider.dart';
 import 'package:how_much_do_i_owe_you/config/app_theme.dart';
@@ -20,8 +19,7 @@ class SettlementCreationScreen extends StatefulWidget {
   });
 
   @override
-  State<SettlementCreationScreen> createState() =>
-      _SettlementCreationScreenState();
+  State<SettlementCreationScreen> createState() => _SettlementCreationScreenState();
 }
 
 class _SettlementCreationScreenState extends State<SettlementCreationScreen> {
@@ -37,10 +35,7 @@ class _SettlementCreationScreenState extends State<SettlementCreationScreen> {
   }
 
   Future<void> _loadTransactions() async {
-    final settlementProvider = Provider.of<SettlementProvider>(
-      context,
-      listen: false,
-    );
+    final settlementProvider = Provider.of<SettlementProvider>(context, listen: false);
 
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
 
@@ -79,10 +74,7 @@ class _SettlementCreationScreenState extends State<SettlementCreationScreen> {
   }
 
   void _toggleAllTransactions() {
-    final settlementProvider = Provider.of<SettlementProvider>(
-      context,
-      listen: false,
-    );
+    final settlementProvider = Provider.of<SettlementProvider>(context, listen: false);
 
     setState(() {
       if (_allTransactionsSelected) {
@@ -110,15 +102,11 @@ class _SettlementCreationScreenState extends State<SettlementCreationScreen> {
       return;
     }
 
-    final settlementProvider = Provider.of<SettlementProvider>(
-      context,
-      listen: false,
-    );
+    final settlementProvider = Provider.of<SettlementProvider>(context, listen: false);
 
     // Filter transactions to only include selected ones
     settlementProvider.transactionsToSettle.retainWhere(
-      (transaction) =>
-          _selectedTransactionIds.contains(transaction.transactionId),
+      (transaction) => _selectedTransactionIds.contains(transaction.transactionId),
     );
 
     final success = await settlementProvider.createSettlement();

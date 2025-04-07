@@ -9,13 +9,12 @@ class PayerNameWidget extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // final payerDataAsync = ref.watch(userDataProvider(payerId));
-    final payerDataAsync = ref.watch(dummyUserDataProvider(payerId));
+    final payerUserDataAsync = ref.watch(userDataProvider(payerId));
 
-    return payerDataAsync.when(
+    return payerUserDataAsync.when(
       data:
-          (payerData) => Text(
-            'Paid by ${payerData?.displayName ?? 'Unknown'}',
+          (payerUserData) => Text(
+            'Paid by ${payerUserData?.displayName ?? 'Unknown'}',
             style: const TextStyle(fontSize: 12, color: AppTheme.textSecondaryColor),
           ),
       loading:

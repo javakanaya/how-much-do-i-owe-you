@@ -25,7 +25,7 @@ final balanceRepositoryProvider =
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef BalanceRepositoryRef = AutoDisposeProviderRef<BalanceRepository>;
-String _$balanceDataHash() => r'43082f51319502de9e129a6ba38c1f6157d03e00';
+String _$balanceDataHash() => r'b55af68007b00a226b4f0d4a0a7d373c6cc756a4';
 
 /// See also [BalanceData].
 @ProviderFor(BalanceData)

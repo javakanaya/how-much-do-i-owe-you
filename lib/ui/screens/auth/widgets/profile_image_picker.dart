@@ -25,11 +25,9 @@ class ProfileImagePicker extends StatelessWidget {
         children: [
           CircleAvatar(
             radius: radius,
-            backgroundColor: AppTheme.borderColor,
+            backgroundColor: AppTheme.primaryColor.withAlpha(51),
             backgroundImage:
-                profileImage != null
-                    ? FileImage(profileImage!) as ImageProvider
-                    : null,
+                profileImage != null ? FileImage(profileImage!) as ImageProvider : null,
             child:
                 profileImage == null
                     ? Text(
@@ -51,17 +49,10 @@ class ProfileImagePicker extends StatelessWidget {
               decoration: BoxDecoration(
                 color: AppTheme.primaryColor,
                 shape: BoxShape.circle,
-                border: Border.all(
-                  color: AppTheme.backgroundColor,
-                  width: 2,
-                ),
+                border: Border.all(color: AppTheme.backgroundColor, width: 2),
               ),
               padding: const EdgeInsets.all(8),
-              child: const Icon(
-                Icons.camera_alt,
-                size: 16,
-                color: Colors.white,
-              ),
+              child: const Icon(Icons.camera_alt, size: 16, color: Colors.white),
             ),
           ),
         ],
@@ -84,9 +75,7 @@ class ProfileImagePickerSection extends StatelessWidget {
 
   Future<void> _pickImage() async {
     final ImagePicker picker = ImagePicker();
-    final XFile? image = await picker.pickImage(
-      source: ImageSource.gallery,
-    );
+    final XFile? image = await picker.pickImage(source: ImageSource.gallery);
 
     if (image != null) {
       onImageSelected(File(image.path));

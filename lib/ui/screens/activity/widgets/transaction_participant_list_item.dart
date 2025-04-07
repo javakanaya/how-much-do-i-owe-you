@@ -13,7 +13,7 @@ class TransactionParticipantListItem extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     // Use dummy data for development; switch to real data in production
-    final userAsync = ref.watch(dummyUserDataProvider(participant.userId));
+    final userDataAsync = ref.watch(userDataProvider(participant.userId));
     final Color backgroundColor =
         participant.isPayer
             ? AppTheme.primaryColor.withAlpha(51)
@@ -29,7 +29,7 @@ class TransactionParticipantListItem extends ConsumerWidget {
             : AppTheme.errorColor;
     // Define colors based on participant status
 
-    return userAsync.when(
+    return userDataAsync.when(
       data: (userData) {
         return Padding(
           padding: const EdgeInsets.symmetric(vertical: 8.0),

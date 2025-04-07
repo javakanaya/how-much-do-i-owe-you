@@ -4,7 +4,6 @@ import 'package:how_much_do_i_owe_you/ui/screens/auth/utils/form_validators.dart
 import 'package:how_much_do_i_owe_you/ui/screens/auth/widgets/headers.dart';
 import 'package:how_much_do_i_owe_you/ui/widgets/custom_button.dart';
 import 'package:how_much_do_i_owe_you/ui/widgets/custom_input_field.dart';
-import 'package:how_much_do_i_owe_you/providers/auth_provider.dart';
 import '../../../config/app_theme.dart';
 
 class PasswordResetScreen extends StatefulWidget {
@@ -29,9 +28,7 @@ class _PasswordResetScreenState extends State<PasswordResetScreen> {
     if (_formKey.currentState!.validate()) {
       final authProvider = Provider.of<AuthProvider>(context, listen: false);
 
-      final success = await authProvider.resetPassword(
-        _emailController.text.trim(),
-      );
+      final success = await authProvider.resetPassword(_emailController.text.trim());
 
       if (success && mounted) {
         setState(() {
@@ -41,9 +38,7 @@ class _PasswordResetScreenState extends State<PasswordResetScreen> {
         // Show error message
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(
-              authProvider.errorMessage ?? 'Failed to send reset email',
-            ),
+            content: Text(authProvider.errorMessage ?? 'Failed to send reset email'),
             backgroundColor: AppTheme.errorColor,
           ),
         );
@@ -67,10 +62,7 @@ class _PasswordResetScreenState extends State<PasswordResetScreen> {
         ),
         title: const Text(
           'Reset Password',
-          style: TextStyle(
-            color: AppTheme.textPrimaryColor,
-            fontWeight: FontWeight.bold,
-          ),
+          style: TextStyle(color: AppTheme.textPrimaryColor, fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
       ),
@@ -123,9 +115,7 @@ class _PasswordResetScreenState extends State<PasswordResetScreen> {
               onPressed: () => Navigator.pop(context),
               icon: const Icon(Icons.arrow_back),
               label: const Text('Back to Login'),
-              style: TextButton.styleFrom(
-                foregroundColor: AppTheme.textSecondaryColor,
-              ),
+              style: TextButton.styleFrom(foregroundColor: AppTheme.textSecondaryColor),
             ),
           ),
         ],
@@ -138,11 +128,7 @@ class _PasswordResetScreenState extends State<PasswordResetScreen> {
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        const Icon(
-          Icons.check_circle_outline,
-          size: 80,
-          color: AppTheme.secondaryColor,
-        ),
+        const Icon(Icons.check_circle_outline, size: 80, color: AppTheme.secondaryColor),
         const SizedBox(height: 24),
         const Text(
           'Check your email',
@@ -156,10 +142,7 @@ class _PasswordResetScreenState extends State<PasswordResetScreen> {
         const SizedBox(height: 16),
         Text(
           'We sent a password reset link to\n${_emailController.text}',
-          style: const TextStyle(
-            fontSize: 16,
-            color: AppTheme.textSecondaryColor,
-          ),
+          style: const TextStyle(fontSize: 16, color: AppTheme.textSecondaryColor),
           textAlign: TextAlign.center,
         ),
         const SizedBox(height: 16),
@@ -180,20 +163,14 @@ class _PasswordResetScreenState extends State<PasswordResetScreen> {
           },
           child: const Text(
             'Didn\'t receive the email? Send again',
-            style: TextStyle(
-              color: AppTheme.primaryColor,
-              fontWeight: FontWeight.w500,
-            ),
+            style: TextStyle(color: AppTheme.primaryColor, fontWeight: FontWeight.w500),
           ),
         ),
 
         const SizedBox(height: 32),
 
         // Return to Login Button
-        PrimaryButton(
-          text: 'Return to Login',
-          onPressed: () => Navigator.pop(context),
-        ),
+        PrimaryButton(text: 'Return to Login', onPressed: () => Navigator.pop(context)),
 
         const SizedBox(height: 32),
       ],

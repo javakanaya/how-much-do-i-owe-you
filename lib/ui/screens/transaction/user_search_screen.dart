@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:how_much_do_i_owe_you/config/app_theme.dart';
 import 'package:how_much_do_i_owe_you/models/user_model.dart';
-import 'package:how_much_do_i_owe_you/providers/auth_provider.dart';
 import 'package:how_much_do_i_owe_you/services/user_service.dart';
 import 'package:how_much_do_i_owe_you/ui/widgets/custom_button.dart';
 
@@ -48,8 +47,7 @@ class _UserSearchScreenState extends State<UserSearchScreen> {
 
     try {
       // Get current user ID to exclude from results
-      final currentUserId =
-          Provider.of<AuthProvider>(context, listen: false).user?.uid;
+      final currentUserId = Provider.of<AuthProvider>(context, listen: false).user?.uid;
 
       final results = await _userService.searchUsers(query);
 
@@ -82,9 +80,7 @@ class _UserSearchScreenState extends State<UserSearchScreen> {
   void _addSelectedUsers() {
     // Get the selected user models from search results
     final selectedUsers =
-        _searchResults
-            .where((user) => _selectedUserIds.contains(user.userId))
-            .toList();
+        _searchResults.where((user) => _selectedUserIds.contains(user.userId)).toList();
 
     // Return the selected users to the previous screen
     Navigator.of(context).pop(selectedUsers);
@@ -132,9 +128,7 @@ class _UserSearchScreenState extends State<UserSearchScreen> {
                                 },
                               )
                               : null,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
+                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                       filled: true,
                       fillColor: Colors.white,
                     ),
@@ -193,24 +187,18 @@ class _UserSearchScreenState extends State<UserSearchScreen> {
                     Expanded(
                       child: ListView.separated(
                         itemCount: _searchResults.length,
-                        separatorBuilder:
-                            (context, index) => const Divider(height: 1),
+                        separatorBuilder: (context, index) => const Divider(height: 1),
                         itemBuilder: (context, index) {
                           final user = _searchResults[index];
-                          final isSelected = _selectedUserIds.contains(
-                            user.userId,
-                          );
+                          final isSelected = _selectedUserIds.contains(user.userId);
 
                           return ListTile(
                             leading: CircleAvatar(
-                              backgroundColor: AppTheme.primaryColor
-                                  .withOpacity(0.2),
+                              backgroundColor: AppTheme.primaryColor.withOpacity(0.2),
                               child:
                                   user.photoURL != null
                                       ? CircleAvatar(
-                                        backgroundImage: NetworkImage(
-                                          user.photoURL!,
-                                        ),
+                                        backgroundImage: NetworkImage(user.photoURL!),
                                       )
                                       : Text(
                                         _getInitials(user.displayName),
@@ -222,21 +210,17 @@ class _UserSearchScreenState extends State<UserSearchScreen> {
                             ),
                             title: Text(
                               user.displayName,
-                              style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                              ),
+                              style: const TextStyle(fontWeight: FontWeight.bold),
                             ),
                             subtitle: Text(user.email),
                             trailing: Checkbox(
                               value: isSelected,
-                              onChanged:
-                                  (_) => _toggleUserSelection(user.userId),
+                              onChanged: (_) => _toggleUserSelection(user.userId),
                               activeColor: AppTheme.primaryColor,
                             ),
                             onTap: () => _toggleUserSelection(user.userId),
                             selected: isSelected,
-                            selectedTileColor: AppTheme.primaryColor
-                                .withOpacity(0.05),
+                            selectedTileColor: AppTheme.primaryColor.withOpacity(0.05),
                           );
                         },
                       ),

@@ -3,7 +3,7 @@ import 'package:how_much_do_i_owe_you/config/app_theme.dart';
 import 'package:intl/intl.dart';
 
 class TodayDate extends StatelessWidget {
-  const TodayDate({Key? key}) : super(key: key);
+  const TodayDate({super.key});
 
   @override
   Widget build(BuildContext context) {
