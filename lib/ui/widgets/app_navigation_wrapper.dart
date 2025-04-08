@@ -3,6 +3,7 @@ import 'package:how_much_do_i_owe_you/config/app_theme.dart';
 import 'package:how_much_do_i_owe_you/ui/screens/activity/activity_screen.dart';
 import 'package:how_much_do_i_owe_you/ui/screens/home/home_screen.dart';
 import 'package:how_much_do_i_owe_you/ui/screens/profile/profile_screen.dart';
+import 'package:how_much_do_i_owe_you/ui/screens/transaction/add_transaction_screen.dart';
 
 class AppNavigationWrapper extends StatefulWidget {
   final int initialPageIndex;
@@ -48,7 +49,7 @@ class _AppNavigationWrapperState extends State<AppNavigationWrapper> {
           ),
         ),
         elevation: 2,
-        backgroundColor: Colors.white,
+        backgroundColor: AppTheme.backgroundColor,
         foregroundColor: AppTheme.textPrimaryColor,
       ),
       body: _screens[_selectedPageIndex],
@@ -103,7 +104,10 @@ class _AppNavigationWrapperState extends State<AppNavigationWrapper> {
           _selectedPageIndex == 0 || _selectedPageIndex == 1
               ? FloatingActionButton(
                 onPressed: () {
-                  // Navigate to add transaction screen
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const AddTransactionScreen()),
+                  );
                 },
                 backgroundColor: AppTheme.primaryColor,
                 child: const Icon(Icons.add),

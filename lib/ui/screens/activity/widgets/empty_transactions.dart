@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:how_much_do_i_owe_you/config/app_theme.dart';
+import 'package:how_much_do_i_owe_you/ui/screens/transaction/add_transaction_screen.dart';
 import 'package:how_much_do_i_owe_you/ui/widgets/custom_button.dart';
 
 class EmptyTransactions extends StatelessWidget {
@@ -36,7 +37,12 @@ class EmptyTransactions extends StatelessWidget {
             PrimaryButton(
               text: 'Add First Transaction',
               icon: Icons.add,
-              onPressed: () {},
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const AddTransactionScreen()),
+                );
+              },
             ),
           ],
         ),

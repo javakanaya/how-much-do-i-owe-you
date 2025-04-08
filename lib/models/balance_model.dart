@@ -4,8 +4,9 @@ class BalanceModel {
   final String id;
   final String userIdA; // First user
   final String userIdB; // Second user
-  final double
-  amount; // Positive means userA is owed by userB, negative means userA owes userB
+
+  // Positive means userA is owed by userB, negative means userA owes userB
+  final double amount;
   final DateTime lastUpdated;
 
   BalanceModel({

@@ -56,7 +56,6 @@ class MyApp extends ConsumerWidget {
       // Define additional routes for non-auth dependent screens
       routes: {
         '/register': (context) => const RegisterScreen(),
-        // '/about': (context) => const AboutScreen(),
         // Other routes that don't depend on auth state
       },
     );
