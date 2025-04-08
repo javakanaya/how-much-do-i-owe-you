@@ -9,10 +9,7 @@ class UserRepository {
   Future<UserModel?> getUserById(String userId) async {
     try {
       final doc =
-          await _firestore
-              .collection(AppConstants.usersCollection)
-              .doc(userId)
-              .get();
+          await _firestore.collection(AppConstants.usersCollection).doc(userId).get();
       if (doc.exists) {
         return UserModel.fromFirestore(doc);
       }
@@ -51,12 +48,58 @@ class UserRepository {
   // Update last active timestamp
   Future<void> updateLastActive(String userId) async {
     try {
-      await _firestore
-          .collection(AppConstants.usersCollection)
-          .doc(userId)
-          .update({'lastActive': FieldValue.serverTimestamp()});
+      await _firestore.collection(AppConstants.usersCollection).doc(userId).update({
+        'lastActive': FieldValue.serverTimestamp(),
+      });
     } catch (e) {
       // Log error but don't rethrow - this is a background operation
+    }
+  }
+
+  Future<List<UserModel>> searchUsers(String query) async {
+    try {
+      final queryLowerCase = query.toLowerCase();
+
+      // search by display name
+      final nameQuery =
+          await _firestore
+              .collection(AppConstants.usersCollection)
+              .where('displayName', isGreaterThanOrEqualTo: queryLowerCase)
+              .where('displayName', isLessThanOrEqualTo: '$queryLowerCase\uf8ff')
+              .get();
+
+      // search by email
+      final emailQuery =
+          await _firestore
+              .collection(AppConstants.usersCollection)
+              .where('email', isGreaterThanOrEqualTo: queryLowerCase)
+              .where('email', isLessThanOrEqualTo: '$queryLowerCase\uf8ff')
+              .get();
+
+      // Combine results and remove duplicates
+      final Set<String> userIds = {};
+      final List<UserModel> results = [];
+
+      for (final doc in nameQuery.docs) {
+        final user = UserModel.fromFirestore(doc);
+        if (!userIds.contains(user.id)) {
+          results.add(user);
+          userIds.add(user.id);
+        }
+      }
+
+      for (final doc in emailQuery.docs) {
+        final user = UserModel.fromFirestore(doc);
+        if (!userIds.contains(user.id)) {
+          results.add(user);
+          userIds.add(user.id);
+        }
+      }
+
+      return results;
+    } catch (e) {
+      // Log error and rethrow
+      rethrow;
     }
   }
 }

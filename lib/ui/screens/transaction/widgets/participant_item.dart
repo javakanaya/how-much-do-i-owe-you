@@ -1,35 +1,23 @@
-// ui/screens/transaction/widgets/participant_item.dart
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:how_much_do_i_owe_you/config/app_constants.dart';
 import 'package:how_much_do_i_owe_you/config/app_theme.dart';
-import 'package:how_much_do_i_owe_you/models/user_model.dart';
-
-class ParticipantEntry {
-  final UserModel user;
-  final double? amount;
-  final bool isPayer;
-
-  ParticipantEntry({required this.user, this.amount, required this.isPayer});
-
-  ParticipantEntry copyWith({UserModel? user, double? amount, bool? isPayer}) {
-    return ParticipantEntry(
-      user: user ?? this.user,
-      amount: amount ?? this.amount,
-      isPayer: isPayer ?? this.isPayer,
-    );
-  }
-}
+import 'package:how_much_do_i_owe_you/providers/transaction_create_provider.dart';
 
 class ParticipantItem extends StatefulWidget {
-  final ParticipantEntry participant;
-  final Function(double?) onAmountChanged;
+  final TransactionParticipantEntry participant;
   final VoidCallback onDelete;
+  final Function(double) onAmountChanged;
+  final bool isPayerToggled;
+  final Function(bool) onPayerToggled;
 
   const ParticipantItem({
     super.key,
     required this.participant,
-    required this.onAmountChanged,
     required this.onDelete,
+    required this.onAmountChanged,
+    required this.isPayerToggled,
+    required this.onPayerToggled,
   });
 
   @override
@@ -37,15 +25,17 @@ class ParticipantItem extends StatefulWidget {
 }
 
 class _ParticipantItemState extends State<ParticipantItem> {
-  late final TextEditingController _amountController;
+  late TextEditingController _amountController;
+  final _rupiahFormat = AppConstants.rupiahFormat;
 
   @override
   void initState() {
     super.initState();
+    // Initialize with existing amount if any
     _amountController = TextEditingController(
       text:
-          widget.participant.amount != null && widget.participant.amount! > 0
-              ? widget.participant.amount!.toStringAsFixed(2)
+          widget.participant.amount > 0
+              ? _rupiahFormat.format(widget.participant.amount)
               : '',
     );
   }
@@ -53,12 +43,17 @@ class _ParticipantItemState extends State<ParticipantItem> {
   @override
   void didUpdateWidget(ParticipantItem oldWidget) {
     super.didUpdateWidget(oldWidget);
-    // Update the text controller if the amount changed externally (e.g., "Split Equally")
-    if (widget.participant.amount != oldWidget.participant.amount) {
-      _amountController.text =
-          widget.participant.amount != null && widget.participant.amount! > 0
-              ? widget.participant.amount!.toStringAsFixed(2)
+    // Update controller if participant amount changes (like when splitting equally)
+    if (oldWidget.participant.amount != widget.participant.amount) {
+      final newText =
+          widget.participant.amount > 0
+              ? _rupiahFormat.format(widget.participant.amount)
               : '';
+
+      _amountController.value = TextEditingValue(
+        text: newText,
+        selection: TextSelection.collapsed(offset: newText.length),
+      );
     }
   }
 
@@ -68,133 +63,122 @@ class _ParticipantItemState extends State<ParticipantItem> {
     super.dispose();
   }
 
+  // Format amount as Rupiah
+  void _formatAmountAsRupiah() {
+    final text = _amountController.text;
+    if (text.isEmpty) return;
+
+    // Remove all non-numeric characters
+    final numericValue = text.replaceAll(RegExp(r'[^0-9]'), '');
+    final amount = int.tryParse(numericValue) ?? 0;
+
+    // Format using the Rupiah formatter
+    final formattedText = _rupiahFormat.format(amount);
+
+    // Update text field without triggering onChanged
+    _amountController.value = TextEditingValue(
+      text: formattedText,
+      selection: TextSelection.collapsed(offset: formattedText.length),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    final user = widget.participant.user;
-
     return Card(
-      margin: const EdgeInsets.only(bottom: 8.0),
+      margin: const EdgeInsets.only(bottom: 12),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(15),
+        side: BorderSide(
+          color: widget.isPayerToggled ? AppTheme.primaryColor : Colors.grey.shade300,
+          width: widget.isPayerToggled ? 2 : 1,
+        ),
+      ),
       child: Padding(
         padding: const EdgeInsets.all(12.0),
-        child: Row(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // User avatar
-            CircleAvatar(
-              backgroundColor: AppTheme.primaryColor.withOpacity(0.2),
-              radius: 24,
-              child:
-                  user.photoURL != null
-                      ? CircleAvatar(
-                        radius: 22,
-                        backgroundImage: NetworkImage(user.photoURL!),
-                      )
-                      : Text(
-                        _getInitials(user.displayName),
-                        style: const TextStyle(
-                          color: AppTheme.primaryColor,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-            ),
-
-            const SizedBox(width: 12),
-
-            // User info
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
+            Row(
+              children: [
+                CircleAvatar(
+                  backgroundColor: AppTheme.primaryLightColor,
+                  radius: 18,
+                  child: Text(
+                    widget.participant.user.displayName[0].toUpperCase(),
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Expanded(
-                        child: Text(
-                          user.displayName,
-                          style: const TextStyle(fontWeight: FontWeight.bold),
-                        ),
+                      Text(
+                        widget.participant.user.displayName,
+                        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                       ),
-                      if (widget.participant.isPayer)
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 8,
-                            vertical: 2,
-                          ),
-                          decoration: BoxDecoration(
-                            color: AppTheme.primaryColor.withOpacity(0.2),
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: const Text(
-                            'Paid',
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: AppTheme.primaryColor,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
+                      Text(
+                        widget.participant.user.email,
+                        style: TextStyle(color: Colors.grey.shade600, fontSize: 12),
+                      ),
                     ],
                   ),
-                  if (user.email.isNotEmpty)
-                    Text(
-                      user.email,
-                      style: const TextStyle(
-                        fontSize: 12,
-                        color: AppTheme.textSecondaryColor,
-                      ),
-                    ),
-                ],
-              ),
-            ),
-
-            const SizedBox(width: 8),
-
-            // Amount field
-            SizedBox(
-              width: 100,
-              child: TextFormField(
-                controller: _amountController,
-                keyboardType: const TextInputType.numberWithOptions(
-                  decimal: true,
                 ),
-                decoration: const InputDecoration(
-                  prefixText: '\$',
-                  contentPadding: EdgeInsets.symmetric(
-                    horizontal: 8,
-                    vertical: 12,
+                IconButton(
+                  icon: const Icon(Icons.delete_outline, color: Colors.grey),
+                  onPressed: widget.onDelete,
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                // Payer toggle switch
+                SizedBox(
+                  height: 30,
+                  child: Switch(
+                    value: widget.isPayerToggled,
+                    onChanged: widget.onPayerToggled,
+                    activeColor: AppTheme.primaryColor,
                   ),
-                  border: OutlineInputBorder(),
                 ),
-                textAlign: TextAlign.end,
-                inputFormatters: [
-                  FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,2}')),
-                ],
-                onChanged: (value) {
-                  final amount = double.tryParse(value);
-                  widget.onAmountChanged(amount);
-                },
-              ),
-            ),
+                const Text('Paid for this', style: TextStyle(fontSize: 14)),
+                const Spacer(),
+                // Amount field
+                SizedBox(
+                  width: 150,
+                  height: 40,
+                  child: TextField(
+                    controller: _amountController,
+                    keyboardType: TextInputType.number,
+                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                    decoration: InputDecoration(
+                      labelText: 'Amount',
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 8,
+                      ),
+                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+                      isDense: true,
+                    ),
+                    onChanged: (value) {
+                      _formatAmountAsRupiah();
 
-            // Delete button
-            if (!widget.participant.isPayer)
-              IconButton(
-                icon: const Icon(
-                  Icons.delete_outline,
-                  color: AppTheme.errorColor,
+                      // Extract numeric value and pass to parent
+                      final numericValue = value.replaceAll(RegExp(r'[^0-9]'), '');
+                      final amount = double.tryParse(numericValue) ?? 0.0;
+                      widget.onAmountChanged(amount);
+                    },
+                  ),
                 ),
-                onPressed: widget.onDelete,
-              ),
+              ],
+            ),
           ],
         ),
       ),
     );
-  }
-
-  // Helper method to get initials from name
-  String _getInitials(String name) {
-    final names = name.split(' ');
-    if (names.length > 1 && names[1].isNotEmpty) {
-      return '${names[0][0]}${names[1][0]}'.toUpperCase();
-    }
-    return name.isNotEmpty ? name[0].toUpperCase() : '?';
   }
 }
