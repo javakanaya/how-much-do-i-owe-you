@@ -15,7 +15,7 @@ class ParticipantSelectionScreen extends ConsumerStatefulWidget {
 
 class _ParticipantSelectionScreenState extends ConsumerState<ParticipantSelectionScreen> {
   final TextEditingController _searchController = TextEditingController();
-  List<UserModel> _selectedUsers = [];
+  final List<UserModel> _selectedUsers = [];
 
   @override
   void dispose() {

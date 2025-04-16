@@ -191,13 +191,32 @@ class TransactionCreate extends _$TransactionCreate {
   void splitEqually() {
     if (state.participants.isEmpty || state.amount <= 0) return;
 
-    final equalAmount = state.amount / state.participants.length;
-    final roundedAmount = (equalAmount * 100).round() / 100; // Round to 2 decimal places
+    // Since we're dealing with Rupiah, we can work directly with integers
+    final totalAmount = state.amount.toInt();
+    final participantCount = state.participants.length;
 
-    final updatedParticipants =
-        state.participants.map((participant) {
-          return participant.copyWith(amount: roundedAmount);
-        }).toList();
+    // Integer division for base amount
+    final baseAmount = totalAmount ~/ participantCount;
+
+    // Calculate remainder
+    final remainder = totalAmount - (baseAmount * participantCount);
+
+    final updatedParticipants = <TransactionParticipantEntry>[];
+
+    // Distribute base amount to all participants
+    for (int i = 0; i < participantCount; i++) {
+      int share = baseAmount;
+
+      // Distribute remainder rupiahs one by one to the first few participants
+      if (i < remainder) {
+        share += 1;
+      }
+
+      // Convert to double if your model requires it
+      final shareAsDouble = share.toDouble();
+
+      updatedParticipants.add(state.participants[i].copyWith(amount: shareAsDouble));
+    }
 
     state = state.copyWith(participants: updatedParticipants);
   }
