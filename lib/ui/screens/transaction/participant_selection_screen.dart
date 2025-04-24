@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:how_much_do_i_owe_you/config/app_theme.dart';
 import 'package:how_much_do_i_owe_you/models/user_model.dart';
+import 'package:how_much_do_i_owe_you/providers/auth_provider.dart';
+import 'package:how_much_do_i_owe_you/providers/user_provider.dart';
+import 'package:how_much_do_i_owe_you/repositories/user_repository.dart';
 import 'package:how_much_do_i_owe_you/ui/widgets/custom_button.dart';
 import 'package:how_much_do_i_owe_you/ui/widgets/custom_input_field.dart';
 
@@ -16,11 +19,54 @@ class ParticipantSelectionScreen extends ConsumerStatefulWidget {
 class _ParticipantSelectionScreenState extends ConsumerState<ParticipantSelectionScreen> {
   final TextEditingController _searchController = TextEditingController();
   final List<UserModel> _selectedUsers = [];
+  List<UserModel> _searchResults = [];
+  bool _isLoading = false;
+  String _errorMessage = '';
+
+  @override
+  void initState() {
+    super.initState();
+    // Initial search with empty string to load some users
+    _performSearch('');
+  }
 
   @override
   void dispose() {
     _searchController.dispose();
     super.dispose();
+  }
+
+  Future<void> _performSearch(String query) async {
+    setState(() {
+      _isLoading = true;
+      _errorMessage = '';
+    });
+
+    try {
+      final repository = ref.read(userRepositoryProvider);
+      final currentUser = ref.read(currentUserProvider);
+
+      if (currentUser == null) {
+        setState(() {
+          _errorMessage = 'You must be logged in to search for users';
+          _isLoading = false;
+        });
+        return;
+      }
+
+      // Get users from repository (now both empty query and search query are handled by repository)
+      final users = await repository.getUsers(query, excludeUserId: currentUser.uid);
+
+      setState(() {
+        _searchResults = users;
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        _errorMessage = 'Error searching users: $e';
+        _isLoading = false;
+      });
+    }
   }
 
   void _toggleUserSelection(UserModel user) {
@@ -35,49 +81,6 @@ class _ParticipantSelectionScreenState extends ConsumerState<ParticipantSelectio
 
   @override
   Widget build(BuildContext context) {
-    // In a real app, this would fetch users from a repository
-    // For this example, we'll use a mock list
-    final mockUsers = [
-      UserModel(
-        id: 'user1',
-        email: 'john@example.com',
-        displayName: 'John Doe',
-        createdAt: DateTime.now(),
-        lastActive: DateTime.now(),
-      ),
-      UserModel(
-        id: 'user2',
-        email: 'jane@example.com',
-        displayName: 'Jane Smith',
-        createdAt: DateTime.now(),
-        lastActive: DateTime.now(),
-      ),
-      UserModel(
-        id: 'user3',
-        email: 'mike@example.com',
-        displayName: 'Mike Johnson',
-        createdAt: DateTime.now(),
-        lastActive: DateTime.now(),
-      ),
-      // Add more mock users as needed
-    ];
-
-    // Filter users based on search query
-    final filteredUsers =
-        _searchController.text.isEmpty
-            ? mockUsers
-            : mockUsers
-                .where(
-                  (user) =>
-                      user.displayName.toLowerCase().contains(
-                        _searchController.text.toLowerCase(),
-                      ) ||
-                      user.email.toLowerCase().contains(
-                        _searchController.text.toLowerCase(),
-                      ),
-                )
-                .toList();
-
     return Scaffold(
       appBar: AppBar(title: const Text('Select Participants')),
       body: SafeArea(
@@ -91,38 +94,63 @@ class _ParticipantSelectionScreenState extends ConsumerState<ParticipantSelectio
                 hintText: 'Search by name or email',
                 prefixIcon: Icons.search,
                 onChanged: (value) {
-                  setState(() {
-                    // This will trigger a rebuild with filtered users
+                  // Debounce search to avoid too many Firestore queries
+                  Future.delayed(const Duration(milliseconds: 500), () {
+                    if (value == _searchController.text) {
+                      _performSearch(value);
+                    }
                   });
                 },
               ),
             ),
-            Expanded(
-              child: ListView.builder(
-                itemCount: filteredUsers.length,
-                itemBuilder: (context, index) {
-                  final user = filteredUsers[index];
-                  final isSelected = _selectedUsers.any((u) => u.id == user.id);
-
-                  return ListTile(
-                    leading: CircleAvatar(
-                      backgroundColor: AppTheme.primaryLightColor,
-                      child: Text(
-                        user.displayName[0].toUpperCase(),
-                        style: const TextStyle(color: Colors.white),
-                      ),
-                    ),
-                    title: Text(user.displayName),
-                    subtitle: Text(user.email),
-                    trailing: Checkbox(
-                      value: isSelected,
-                      onChanged: (_) => _toggleUserSelection(user),
-                      activeColor: AppTheme.primaryColor,
-                    ),
-                    onTap: () => _toggleUserSelection(user),
-                  );
-                },
+            if (_errorMessage.isNotEmpty)
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: Text(
+                  _errorMessage,
+                  style: const TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+                ),
               ),
+            Expanded(
+              child:
+                  _isLoading
+                      ? const Center(child: CircularProgressIndicator())
+                      : _searchResults.isEmpty
+                      ? const Center(
+                        child: Text('No users found. Try a different search term.'),
+                      )
+                      : ListView.builder(
+                        itemCount: _searchResults.length,
+                        itemBuilder: (context, index) {
+                          final user = _searchResults[index];
+                          final isSelected = _selectedUsers.any((u) => u.id == user.id);
+
+                          return ListTile(
+                            leading:
+                                user.photoURL != null
+                                    ? CircleAvatar(
+                                      backgroundImage: NetworkImage(user.photoURL!),
+                                    )
+                                    : CircleAvatar(
+                                      backgroundColor: AppTheme.primaryLightColor,
+                                      child: Text(
+                                        user.displayName.isNotEmpty
+                                            ? user.displayName[0].toUpperCase()
+                                            : '?',
+                                        style: const TextStyle(color: Colors.white),
+                                      ),
+                                    ),
+                            title: Text(user.displayName),
+                            subtitle: Text(user.email),
+                            trailing: Checkbox(
+                              value: isSelected,
+                              onChanged: (_) => _toggleUserSelection(user),
+                              activeColor: AppTheme.primaryColor,
+                            ),
+                            onTap: () => _toggleUserSelection(user),
+                          );
+                        },
+                      ),
             ),
             Padding(
               padding: const EdgeInsets.all(16.0),
@@ -138,9 +166,12 @@ class _ParticipantSelectionScreenState extends ConsumerState<ParticipantSelectio
                   const SizedBox(height: 16),
                   PrimaryButton(
                     text: 'Add Selected Participants',
-                    onPressed: () {
-                      Navigator.pop(context, _selectedUsers);
-                    },
+                    onPressed:
+                        _selectedUsers.isEmpty
+                            ? () {}
+                            : () {
+                              Navigator.pop(context, _selectedUsers);
+                            },
                   ),
                 ],
               ),

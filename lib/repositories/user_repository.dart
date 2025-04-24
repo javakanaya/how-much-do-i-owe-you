@@ -56,6 +56,35 @@ class UserRepository {
     }
   }
 
+  // Get users with optional search query and exclusion
+  Future<List<UserModel>> getUsers(String query, {String? excludeUserId}) async {
+    try {
+      final List<UserModel> users;
+
+      if (query.isEmpty) {
+        // Get all users (limited to a reasonable number)
+        final snapshot =
+            await _firestore.collection(AppConstants.usersCollection).limit(20).get();
+
+        users = snapshot.docs.map((doc) => UserModel.fromFirestore(doc)).toList();
+      } else {
+        // Search for users by name or email
+        users = await searchUsers(query);
+      }
+
+      // Exclude specific user if requested
+      if (excludeUserId != null) {
+        users.removeWhere((user) => user.id == excludeUserId);
+      }
+
+      return users;
+    } catch (e) {
+      // Log error and rethrow
+      rethrow;
+    }
+  }
+
+  // Search users by name or email
   Future<List<UserModel>> searchUsers(String query) async {
     try {
       final queryLowerCase = query.toLowerCase();
